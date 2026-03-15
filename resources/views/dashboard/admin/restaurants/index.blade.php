@@ -172,12 +172,12 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Logo</label>
-                            <input type="file" name="logo" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Logo <span class="text-orange-500">(Max 2Mo)</span></label>
+                            <input type="file" name="logo" accept="image/*" onchange="checkFileSize(this)" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Image de Couverture</label>
-                            <input type="file" name="banner" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Image de Couverture <span class="text-orange-500">(Max 2Mo)</span></label>
+                            <input type="file" name="banner" accept="image/*" onchange="checkFileSize(this)" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
                         </div>
                     </div>
 
@@ -204,6 +204,16 @@
         function generatePassword() {
             const password = Math.floor(10000000 + Math.random() * 90000000).toString();
             document.getElementById('generatedPassword').value = password;
+        }
+
+        function checkFileSize(input) {
+            if (input.files && input.files[0]) {
+                const fileSize = input.files[0].size / 1024 / 1024; // in MB
+                if (fileSize > 2) {
+                    alert('Le fichier est trop volumineux. La taille maximale autorisée est de 2Mo.');
+                    input.value = '';
+                }
+            }
         }
 
         function closeModal(id) {

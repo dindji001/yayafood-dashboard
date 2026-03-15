@@ -46,10 +46,28 @@ class RestaurantManagerController extends Controller
 
     public function settings()
     {
+        return redirect()->route('restaurant.settings.profile');
+    }
+
+    public function settingsProfile()
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        return view('dashboard.restaurant.settings.profile', compact('restaurant'));
+    }
+
+    public function settingsHours()
+    {
         $user = Auth::user();
         $restaurant = Restaurant::with('openingHours')->findOrFail($user->restaurant_id);
-        
-        return view('dashboard.restaurant.settings.index', compact('restaurant'));
+        return view('dashboard.restaurant.settings.hours', compact('restaurant'));
+    }
+
+    public function settingsServices()
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        return view('dashboard.restaurant.settings.services', compact('restaurant'));
     }
 
     public function updateOpeningHours(Request $request)

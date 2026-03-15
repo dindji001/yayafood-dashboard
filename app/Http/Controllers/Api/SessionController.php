@@ -14,6 +14,14 @@ class SessionController extends Controller
             'restaurant_id' => 'required|exists:restaurants,id',
         ]);
 
+        $restaurant = \App\Models\Restaurant::findOrFail($request->restaurant_id);
+        
+        if (!$restaurant->is_active) {
+            return response()->json([
+                'message' => 'Ce restaurant est temporairement fermé.'
+            ], 403);
+        }
+
         $user = $request->user();
         
         // Supprimer l'ancienne session si elle existe

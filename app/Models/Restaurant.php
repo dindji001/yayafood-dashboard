@@ -13,6 +13,12 @@ class Restaurant extends Model
 
     protected $appends = ['logo_url', 'banner_url', 'qr_code_url'];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'allow_pay_on_spot' => 'boolean',
+        'allow_online_payment' => 'boolean',
+    ];
+
     public function getLogoUrlAttribute()
     {
         return $this->logo ? asset('storage/' . $this->logo) : null;
@@ -23,9 +29,26 @@ class Restaurant extends Model
         return $this->banner ? asset('storage/' . $this->banner) : null;
     }
 
+    public function generateQrCode()
+    {
+        $url = config('app.url') . '/r/' . $this->id;
+        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')
+            ->size(500)
+            ->margin(2)
+            ->errorCorrection('H')
+            ->generate($url);
+
+        $path = 'restaurants/qrcodes/qr_' . $this->id . '.png';
+        \Illuminate\Support\Facades\Storage::disk('public')->put($path, $qrCode);
+
+        $this->update(['qr_code' => $path]);
+        
+        return $path;
+    }
+
     public function getQrCodeUrlAttribute()
     {
-        return $this->qr_code ? asset('storage/' . $this->qr_code) : null;
+        return $this->qr_code ? \Illuminate\Support\Facades\Storage::url($this->qr_code) : null;
     }
 
     public function users()

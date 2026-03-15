@@ -41,9 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/restaurant/reviews', [RestaurantManagerController::class, 'reviews'])->name('restaurant.reviews.index');
         Route::get('/restaurant/settings', [RestaurantManagerController::class, 'settings'])->name('restaurant.settings.index');
 
-        Route::post('/restaurant/info', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
+        Route::post('/restaurant/settings/update', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
         Route::post('/restaurant/settings/toggle', [RestaurantManagerController::class, 'toggleSettings'])->name('restaurant.settings.toggle');
-        
+        Route::post('/restaurant/qrcode/regenerate', [RestaurantManagerController::class, 'regenerateQrCode'])->name('restaurant.qrcode.regenerate');
+
+        // Catégories & Plats
         Route::post('/restaurant/categories', [RestaurantManagerController::class, 'createCategory'])->name('restaurant.categories.create');
         Route::put('/restaurant/categories/{id}', [RestaurantManagerController::class, 'updateCategory'])->name('restaurant.categories.update');
         Route::delete('/restaurant/categories/{id}', [RestaurantManagerController::class, 'deleteCategory'])->name('restaurant.categories.delete');

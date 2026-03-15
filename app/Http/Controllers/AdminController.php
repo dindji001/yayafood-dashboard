@@ -150,6 +150,9 @@ class AdminController extends Controller
         $restaurantData['is_active'] = true;
 
         $restaurant = Restaurant::create($restaurantData);
+        
+        // Génération automatique du QR Code à la création
+        $restaurant->generateQrCode();
 
         // Création de l'utilisateur administrateur du restaurant
         User::create([

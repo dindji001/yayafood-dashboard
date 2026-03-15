@@ -163,9 +163,17 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-sm">
+                    <form action="{{ route('restaurant.qrcode.regenerate') }}" method="POST" class="col-span-2">
+                        @csrf
+                        <button type="submit" class="w-full bg-[#2C3E3F] text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A2829] transition-all flex items-center justify-center gap-2 mb-2 shadow-lg shadow-[#2C3E3F]/20">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            Générer Automatiquement
+                        </button>
+                    </form>
+
                     <form action="{{ route('restaurant.info.update') }}" method="POST" enctype="multipart/form-data" class="contents">
                         @csrf
-                        <label class="cursor-pointer bg-[#2C3E3F] text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#1A2829] transition-all flex items-center justify-center gap-2">
+                        <label class="cursor-pointer bg-white border border-gray-200 text-[#2C3E3F] px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm">
                             <i data-lucide="upload" class="w-4 h-4"></i>
                             Importer
                             <input type="file" name="qr_code" class="hidden" onchange="this.form.submit()">
@@ -173,7 +181,7 @@
                     </form>
                     
                     @if($restaurant->qr_code)
-                        <a href="{{ $restaurant->qr_code_url }}" download class="bg-orange-500 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-2">
+                        <a href="{{ $restaurant->qr_code_url }}" download class="bg-orange-500 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20">
                             <i data-lucide="download" class="w-4 h-4"></i>
                             Télécharger
                         </a>

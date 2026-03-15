@@ -117,19 +117,19 @@
         </header>
 
         <!-- Stats Overview -->
-        <div class="grid grid-cols-4 gap-8 mb-12">
+        <div class="grid grid-cols-5 gap-8 mb-12">
             <div class="glass-card p-8 rounded-[2.5rem] shadow-sm">
                 <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
                     <i data-lucide="trending-up" class="w-6 h-6"></i>
                 </div>
                 <p class="text-gray-400 font-bold text-[10px] tracking-widest uppercase mb-2">Chiffre d'Affaires</p>
-                <h3 class="text-3xl font-black text-[#2C3E3F]">{{ number_format($orderStats['total_revenue'], 0, ',', ' ') }} <span class="text-xs">CFA</span></h3>
+                <h3 class="text-2xl font-black text-[#2C3E3F]">{{ number_format($orderStats['total_revenue'], 0, ',', ' ') }} <span class="text-xs">CFA</span></h3>
             </div>
             <div class="glass-card p-8 rounded-[2.5rem] shadow-sm">
                 <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6">
                     <i data-lucide="x-circle" class="w-6 h-6"></i>
                 </div>
-                <p class="text-gray-400 font-bold text-[10px] tracking-widest uppercase mb-2">Annulées / Échouées</p>
+                <p class="text-gray-400 font-bold text-[10px] tracking-widest uppercase mb-2">Annulées</p>
                 <h3 class="text-3xl font-black text-[#2C3E3F]">{{ $orderStats['cancelled'] + $orderStats['failed'] }}</h3>
             </div>
             <div class="glass-card p-8 rounded-[2.5rem] shadow-sm">
@@ -144,7 +144,19 @@
                     <i data-lucide="star" class="w-6 h-6"></i>
                 </div>
                 <p class="text-gray-400 font-bold text-[10px] tracking-widest uppercase mb-2">Note Moyenne</p>
-                <h3 class="text-3xl font-black text-[#2C3E3F]">{{ number_format($restaurant->averageRating(), 1) }} ★</h3>
+                <h3 class="text-3xl font-black text-[#2C3E3F]">{{ number_format($restaurant->reviews()->avg('rating') ?: 0, 1) }} ★</h3>
+            </div>
+            <div class="glass-card p-6 rounded-[2.5rem] shadow-sm flex flex-col items-center justify-center text-center group relative overflow-hidden">
+                @if($restaurant->qr_code)
+                    <img src="{{ $restaurant->qr_code_url }}" class="w-20 h-20 mb-2 relative z-10" alt="QR Code">
+                    <a href="{{ $restaurant->qr_code_url }}" download class="text-[8px] font-black text-orange-500 uppercase tracking-widest hover:underline relative z-10">Télécharger</a>
+                @else
+                    <i data-lucide="qr-code" class="w-12 h-12 text-gray-200 mb-2"></i>
+                    <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Pas de QR</p>
+                @endif
+                <div class="absolute inset-0 bg-[#2C3E3F] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center p-4">
+                    <p class="text-[8px] font-black text-white uppercase leading-relaxed">Le QR Code permet l'accès au menu digital</p>
+                </div>
             </div>
         </div>
 

@@ -116,6 +116,16 @@ class RestaurantManagerController extends Controller
         return redirect()->back()->with('success', 'Informations du restaurant mises à jour.');
     }
 
+    public function regenerateQrCode()
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        
+        $restaurant->generateQrCode();
+
+        return redirect()->back()->with('success', 'Nouveau QR Code généré avec succès.');
+    }
+
     public function createCategory(Request $request)
     {
         $user = Auth::user();

@@ -463,7 +463,13 @@
         
         // Handle Active State & Smooth Scroll
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const sections = document.querySelectorAll('main > div[id], main > section[id]');
+        const sections = [
+            document.getElementById('dashboard'),
+            document.getElementById('orders'),
+            document.getElementById('menu'),
+            document.getElementById('reviews'),
+            document.getElementById('profile')
+        ].filter(el => el !== null);
 
         sidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -475,21 +481,13 @@
                     
                     if (targetElement) {
                         window.scrollTo({
-                            top: targetElement.offsetTop - 40,
+                            top: targetElement.offsetTop - 100,
                             behavior: 'smooth'
                         });
                     }
 
-                    sidebarLinks.forEach(l => l.classList.remove('active', 'text-white'));
-                    sidebarLinks.forEach(l => {
-                        if (!l.classList.contains('active')) {
-                            l.classList.add('text-gray-400');
-                        }
-                    });
-
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
-                    link.classList.remove('text-gray-400');
-                    link.classList.add('text-white');
                 }
             });
         });
@@ -499,17 +497,15 @@
             let current = "";
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 100) {
+                if (pageYOffset >= sectionTop - 150) {
                     current = section.getAttribute("id");
                 }
             });
 
             sidebarLinks.forEach((link) => {
-                link.classList.remove("active", "text-white");
-                link.classList.add("text-gray-400");
+                link.classList.remove("active");
                 if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active", "text-white");
-                    link.classList.remove("text-gray-400");
+                    link.classList.add("active");
                 }
             });
         });

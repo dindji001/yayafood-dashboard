@@ -344,7 +344,11 @@
 
         // Handle Active State & Smooth Scroll
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const sections = document.querySelectorAll('main > div[id], main > section[id]');
+        const sections = [
+            document.getElementById('dashboard'),
+            document.getElementById('restaurants'),
+            document.getElementById('users')
+        ].filter(el => el !== null);
 
         sidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -356,20 +360,13 @@
                     
                     if (targetElement) {
                         window.scrollTo({
-                            top: targetElement.offsetTop - 40,
+                            top: targetElement.offsetTop - 100,
                             behavior: 'smooth'
                         });
                     }
 
-                    sidebarLinks.forEach(l => l.classList.remove('active', 'bg-[#2C3E3F]/10', 'text-[#2C3E3F]', 'border-r-4', 'border-[#2C3E3F]'));
-                    sidebarLinks.forEach(l => {
-                        if (!l.classList.contains('active')) {
-                            l.classList.add('text-gray-500');
-                        }
-                    });
-
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
-                    link.classList.remove('text-gray-500');
                 }
             });
         });
@@ -379,7 +376,7 @@
             let current = "";
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 100) {
+                if (pageYOffset >= sectionTop - 150) {
                     current = section.getAttribute("id");
                 }
             });

@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/restaurant/info', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
     Route::post('/restaurant/categories', [RestaurantManagerController::class, 'createCategory'])->name('restaurant.categories.create');
     Route::post('/restaurant/dishes', [RestaurantManagerController::class, 'createDish'])->name('restaurant.dishes.create');
+    Route::post('/restaurant/reviews/{id}/reply', [RestaurantManagerController::class, 'replyToReview'])->name('restaurant.reviews.reply');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

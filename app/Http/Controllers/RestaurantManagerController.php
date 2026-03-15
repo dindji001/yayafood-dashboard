@@ -6,10 +6,28 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Dish;
 use App\Models\Restaurant;
+use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
 
 class RestaurantManagerController extends Controller
 {
+    public function replyToReview(Request $request, $id)
+    {
+        $user = Auth::user();
+        $review = Review::where('restaurant_id', $user->restaurant_id)->findOrFail($id);
+
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ]);
+
+        $review->update([
+            'reply' => $request->reply,
+            'replied_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Votre réponse a été publiée.');
+    }
+
     public function updateInfo(Request $request)
     {
         $user = Auth::user();

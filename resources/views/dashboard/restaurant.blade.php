@@ -185,7 +185,22 @@
                                 <span class="text-amber-400 text-xs">★</span>
                             </div>
                         </div>
-                        <p class="text-gray-600 text-sm leading-relaxed font-medium italic">"{{ $review->comment }}"</p>
+                        <p class="text-gray-600 text-sm leading-relaxed font-medium italic mb-3">"{{ $review->comment }}"</p>
+                        
+                        @if($review->reply)
+                            <div class="bg-gray-50 p-4 rounded-2xl border-l-4 border-teal-500 ml-4">
+                                <p class="text-[10px] text-teal-600 font-bold uppercase tracking-widest mb-1">Votre réponse</p>
+                                <p class="text-gray-700 text-xs font-semibold">{{ $review->reply }}</p>
+                            </div>
+                        @else
+                            <form action="{{ route('restaurant.reviews.reply', $review->id) }}" method="POST" class="ml-4 mt-2">
+                                @csrf
+                                <div class="flex gap-2">
+                                    <input type="text" name="reply" placeholder="Répondre à ce client..." required class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20">
+                                    <button type="submit" class="bg-[#2C3E3F] text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider">Répondre</button>
+                                </div>
+                            </form>
+                        @endif
                     </div>
                     @empty
                     <p class="text-center text-gray-400 font-bold py-10">Aucun avis pour le moment.</p>

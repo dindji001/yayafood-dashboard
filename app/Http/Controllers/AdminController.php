@@ -112,25 +112,37 @@ class AdminController extends Controller
             'address' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|digits:8',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $data = $request->only(['name', 'address', 'phone', 'description']);
+        $restaurantData = $request->only(['name', 'address', 'phone', 'description']);
         
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('restaurants/logos', 'public');
+            $restaurantData['logo'] = $request->file('logo')->store('restaurants/logos', 'public');
         }
         
         if ($request->hasFile('banner')) {
-            $data['banner'] = $request->file('banner')->store('restaurants/banners', 'public');
+            $restaurantData['banner'] = $request->file('banner')->store('restaurants/banners', 'public');
         }
 
-        $data['is_active'] = true;
+        $restaurantData['is_active'] = true;
 
-        Restaurant::create($data);
+        $restaurant = Restaurant::create($restaurantData);
 
-        return redirect()->back()->with('success', 'Restaurant créé avec succès.');
+        // Création de l'utilisateur administrateur du restaurant
+        User::create([
+            'name' => 'Admin ' . $restaurant->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'restaurant',
+            'restaurant_id' => $restaurant->id,
+            'must_change_password' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Restaurant et compte administrateur créés avec succès.');
     }
 
     public function updateRestaurant(Request $request, $id)
@@ -178,6 +190,7 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'restaurant',
             'restaurant_id' => $request->restaurant_id,
+            'must_change_password' => true,
         ]);
 
         return redirect()->back()->with('success', 'Restauranteur créé et assigné avec succès.');

@@ -146,6 +146,20 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Email Administrateur</label>
+                            <input type="email" name="email" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="admin@restaurant.com">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Mot de passe (8 chiffres)</label>
+                            <div class="relative">
+                                <input type="text" name="password" id="generatedPassword" required maxlength="8" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="12345678">
+                                <button type="button" onclick="generatePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-teal-600 hover:text-teal-700 font-bold text-[10px] uppercase tracking-wider">Générer</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Adresse Complète</label>
                         <input type="text" name="address" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="ex: 123 Rue de la Gastronomie, Paris">
@@ -182,6 +196,14 @@
         function openModal(id) {
             document.getElementById(id).classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            if (id === 'createRestaurantModal') {
+                generatePassword();
+            }
+        }
+
+        function generatePassword() {
+            const password = Math.floor(10000000 + Math.random() * 90000000).toString();
+            document.getElementById('generatedPassword').value = password;
         }
 
         function closeModal(id) {

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'role',
         'restaurant_id',
+        'must_change_password',
     ];
 
     public function restaurant()
@@ -82,6 +83,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
     }
 }

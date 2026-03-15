@@ -225,6 +225,108 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Opening Hours -->
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 flex items-center gap-3">
+                        <i data-lucide="clock" class="w-6 h-6 text-blue-500"></i>
+                        Horaires d'Ouverture
+                    </h3>
+
+                    <form action="{{ route('restaurant.opening-hours.update') }}" method="POST" class="space-y-6" id="openingHoursForm">
+                        @csrf
+                        @method('PUT')
+                        
+                        <!-- Quick Actions -->
+                        <div class="grid grid-cols-2 gap-4 mb-8">
+                            <button type="button" onclick="setAll24h(true)" class="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-blue-600 font-bold text-xs uppercase tracking-widest hover:bg-blue-100 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="infinity" class="w-4 h-4"></i> Ouvert 24h/7j
+                            </button>
+                            <button type="button" onclick="resetHours()" class="p-4 bg-gray-50 border border-gray-100 rounded-2xl text-gray-600 font-bold text-xs uppercase tracking-widest hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Réinitialiser
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            @php
+                                $days = [
+                                    1 => 'Lundi', 
+                                    2 => 'Mardi', 
+                                    3 => 'Mercredi', 
+                                    4 => 'Jeudi', 
+                                    5 => 'Vendredi', 
+                                    6 => 'Samedi', 
+                                    0 => 'Dimanche'
+                                ];
+                                $hours = $restaurant->openingHours->keyBy('day_of_week');
+                            @endphp
+
+                            @foreach($days as $num => $label)
+                                @php $h = $hours->get($num); @endphp
+                                <div class="p-5 bg-gray-50 rounded-[2rem] border border-gray-100 transition-all day-row">
+                                    <div class="flex flex-wrap items-center justify-between gap-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-[#2C3E3F]">
+                                                <span class="text-[10px] font-black uppercase">{{ substr($label, 0, 3) }}</span>
+                                            </div>
+                                            <span class="text-sm font-bold text-[#2C3E3F]">{{ $label }}</span>
+                                        </div>
+
+                                        <div class="flex items-center gap-6">
+                                            <!-- Toggle 24h -->
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input type="checkbox" name="hours[{{ $loop->index }}][is_24h]" value="1" {{ $h && $h->is_24h ? 'checked' : '' }} 
+                                                       class="hidden peer is-24h-checkbox" onchange="toggle24h(this)">
+                                                <div class="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all">
+                                                    <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                                                </div>
+                                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-blue-500 transition-colors">24h/24</span>
+                                            </label>
+
+                                            <!-- Toggle Closed -->
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input type="checkbox" name="hours[{{ $loop->index }}][is_closed]" value="1" {{ $h && $h->is_closed ? 'checked' : '' }} 
+                                                       class="hidden peer is-closed-checkbox" onchange="toggleClosed(this)">
+                                                <div class="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:bg-red-500 peer-checked:border-red-500 flex items-center justify-center transition-all">
+                                                    <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                                                </div>
+                                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-red-500 transition-colors">Fermé</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="hidden" name="hours[{{ $loop->index }}][day_of_week]" value="{{ $num }}">
+                                    
+                                    <div class="mt-4 pt-4 border-t border-white/50 flex items-center justify-center gap-4 time-inputs {{ ($h && ($h->is_24h || $h->is_closed)) ? 'hidden' : '' }}">
+                                        <div class="relative flex-1 max-w-[120px]">
+                                            <i data-lucide="door-open" class="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"></i>
+                                            <input type="time" name="hours[{{ $loop->index }}][open_time]" value="{{ $h ? substr($h->open_time, 0, 5) : '09:00' }}" 
+                                                   class="w-full bg-white border-none rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
+                                        </div>
+                                        <span class="text-gray-300 font-black text-[10px] uppercase tracking-tighter">au</span>
+                                        <div class="relative flex-1 max-w-[120px]">
+                                            <i data-lucide="door-closed" class="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"></i>
+                                            <input type="time" name="hours[{{ $loop->index }}][close_time]" value="{{ $h ? substr($h->close_time, 0, 5) : '22:00' }}" 
+                                                   class="w-full bg-white border-none rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 text-center status-label {{ (!($h && ($h->is_24h || $h->is_closed))) ? 'hidden' : '' }}">
+                                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest status-badge {{ $h && $h->is_24h ? 'bg-blue-100 text-blue-600' : ($h && $h->is_closed ? 'bg-red-100 text-red-600' : '') }}">
+                                            @if($h && $h->is_24h) Ouvert non-stop (24h)
+                                            @elseif($h && $h->is_closed) Établissement fermé
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#2C3E3F] text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A2829] transition-all shadow-xl shadow-[#2C3E3F]/20 mt-6 flex items-center justify-center gap-3">
+                            <i data-lucide="save" class="w-5 h-5"></i> Sauvegarder l'organisation
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- QR Code Section -->
@@ -269,6 +371,60 @@
         </div>
     </main>
 
-    <script>lucide.createIcons();</script>
+    <script>
+        lucide.createIcons();
+
+        function toggle24h(checkbox) {
+            const row = checkbox.closest('.day-row');
+            const timeInputs = row.querySelector('.time-inputs');
+            const statusLabel = row.querySelector('.status-label');
+            const statusBadge = row.querySelector('.status-badge');
+            const closedCheckbox = row.querySelector('.is-closed-checkbox');
+
+            if (checkbox.checked) {
+                closedCheckbox.checked = false;
+                timeInputs.classList.add('hidden');
+                statusLabel.classList.remove('hidden');
+                statusBadge.textContent = 'Ouvert non-stop (24h)';
+                statusBadge.className = 'px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest status-badge bg-blue-100 text-blue-600';
+            } else {
+                timeInputs.classList.remove('hidden');
+                statusLabel.classList.add('hidden');
+            }
+        }
+
+        function toggleClosed(checkbox) {
+            const row = checkbox.closest('.day-row');
+            const timeInputs = row.querySelector('.time-inputs');
+            const statusLabel = row.querySelector('.status-label');
+            const statusBadge = row.querySelector('.status-badge');
+            const checkbox24h = row.querySelector('.is-24h-checkbox');
+
+            if (checkbox.checked) {
+                checkbox24h.checked = false;
+                timeInputs.classList.add('hidden');
+                statusLabel.classList.remove('hidden');
+                statusBadge.textContent = 'Établissement fermé';
+                statusBadge.className = 'px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest status-badge bg-red-100 text-red-600';
+            } else {
+                timeInputs.classList.remove('hidden');
+                statusLabel.classList.add('hidden');
+            }
+        }
+
+        function setAll24h(value) {
+            document.querySelectorAll('.is-24h-checkbox').forEach(cb => {
+                cb.checked = value;
+                toggle24h(cb);
+            });
+        }
+
+        function resetHours() {
+            document.querySelectorAll('.is-24h-checkbox, .is-closed-checkbox').forEach(cb => {
+                cb.checked = false;
+                toggle24h(cb);
+            });
+        }
+    </script>
 </body>
 </html>

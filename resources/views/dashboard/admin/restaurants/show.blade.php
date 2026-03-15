@@ -97,6 +97,34 @@
             @endif
         </div>
 
+        <!-- Opening Hours (Admin View) -->
+        <div class="glass-card rounded-[2.5rem] p-10 mb-12 shadow-sm border border-gray-100">
+            <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-6 flex items-center gap-3">
+                <i data-lucide="clock" class="w-6 h-6 text-blue-500"></i>
+                Horaires d'Ouverture
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                @php
+                    $days = [
+                        1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 
+                        4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 0 => 'Dimanche'
+                    ];
+                    $hours = $restaurant->openingHours->keyBy('day_of_week');
+                @endphp
+                @foreach($days as $num => $label)
+                    @php $h = $hours->get($num); @endphp
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center text-center">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{{ $label }}</span>
+                        @if($h && !$h->is_closed)
+                            <span class="text-sm font-bold text-[#2C3E3F]">{{ substr($h->open_time, 0, 5) }} - {{ substr($h->close_time, 0, 5) }}</span>
+                        @else
+                            <span class="text-sm font-bold text-red-500 uppercase">Fermé</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
         <header class="flex justify-between items-center mb-12">
             <div class="flex items-center gap-6">
                 <a href="{{ route('admin.restaurants.index') }}" class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all">

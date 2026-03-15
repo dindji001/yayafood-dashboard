@@ -14,11 +14,21 @@ class SessionController extends Controller
             'restaurant_id' => 'required|exists:restaurants,id',
         ]);
 
-        $restaurant = \App\Models\Restaurant::findOrFail($request->restaurant_id);
+        $restaurant = \App\Models\Restaurant::with('openingHours')->findOrFail($request->restaurant_id);
         
         if (!$restaurant->is_active) {
             return response()->json([
-                'message' => 'Ce restaurant est temporairement fermé.'
+                'message' => 'Ce restaurant est temporairement fermé.',
+                'code' => 'RESTAURANT_INACTIVE'
+            ], 403);
+        }
+
+        // Vérifier les horaires d'ouverture
+        if (!$this->isCurrentlyOpen($restaurant)) {
+            return response()->json([
+                'message' => 'Ce restaurant est actuellement fermé.',
+                'code' => 'RESTAURANT_CLOSED',
+                'restaurant' => $restaurant
             ], 403);
         }
 
@@ -54,5 +64,43 @@ class SessionController extends Controller
             'expires_at' => $session->expires_at,
             'remaining_minutes' => now()->diffInMinutes($session->expires_at)
         ]);
+    }
+
+    private function isCurrentlyOpen($restaurant)
+    {
+        if ($restaurant->openingHours->isEmpty()) {
+            return true;
+        }
+
+        $now = now();
+        $dayOfWeek = $now->dayOfWeek; // Carbon: 0=Sun, 1=Mon, ..., 6=Sat
+
+        $todayHours = $restaurant->openingHours->where('day_of_week', $dayOfWeek)->first();
+
+        if (!$todayHours) {
+            return true;
+        }
+
+        if ($todayHours->is_24h) {
+            return true;
+        }
+
+        if ($todayHours->is_closed) {
+            return false;
+        }
+
+        if ($todayHours->open_time && $todayHours->close_time) {
+            $open = \Carbon\Carbon::createFromTimeString($todayHours->open_time);
+            $close = \Carbon\Carbon::createFromTimeString($todayHours->close_time);
+
+            // Gérer le cas où le restaurant ferme après minuit
+            if ($close->lessThan($open)) {
+                return $now->greaterThanOrEqualTo($open) || $now->lessThanOrEqualTo($close);
+            }
+
+            return $now->between($open, $close);
+        }
+
+        return false;
     }
 }

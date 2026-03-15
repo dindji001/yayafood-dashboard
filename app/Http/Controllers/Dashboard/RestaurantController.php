@@ -79,7 +79,11 @@ class RestaurantController extends Controller
         }
 
         $restaurant->update($request->all());
-        return response()->json($restaurant);
+        
+        if ($request->expectsJson()) {
+            return response()->json($restaurant);
+        }
+        return back()->with('success', 'Profil mis à jour');
     }
 
     public function createCategory(Request $request)
@@ -150,6 +154,7 @@ class RestaurantController extends Controller
             'hours.*.open_time' => 'nullable|string',
             'hours.*.close_time' => 'nullable|string',
             'hours.*.is_closed' => 'required|boolean',
+            'hours.*.is_24h' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -165,12 +170,16 @@ class RestaurantController extends Controller
                 [
                     'open_time' => $hourData['open_time'],
                     'close_time' => $hourData['close_time'],
-                    'is_closed' => $hourData['is_closed'],
+                    'is_closed' => isset($hourData['is_closed']) && ($hourData['is_closed'] == 1 || $hourData['is_closed'] == 'true' || $hourData['is_closed'] == true),
+                    'is_24h' => isset($hourData['is_24h']) && ($hourData['is_24h'] == 1 || $hourData['is_24h'] == 'true' || $hourData['is_24h'] == true),
                 ]
             );
         }
 
-        return response()->json(['message' => 'Horaires mis à jour avec succès']);
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Horaires mis à jour avec succès']);
+        }
+        return back()->with('success', 'Horaires mis à jour');
     }
 
     public function getOpeningHours(Request $request)

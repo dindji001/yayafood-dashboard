@@ -11,11 +11,13 @@ class OpeningHour extends Model
         'day_of_week',
         'open_time',
         'close_time',
-        'is_closed'
+        'is_closed',
+        'is_24h'
     ];
 
     protected $casts = [
         'is_closed' => 'boolean',
+        'is_24h' => 'boolean',
     ];
 
     public function restaurant()

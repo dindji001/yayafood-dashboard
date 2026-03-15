@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
 {
-    protected $fillable = ['name', 'description', 'address', 'phone', 'logo', 'banner', 'qr_code', 'is_active'];
+    protected $fillable = [
+        'name', 'description', 'address', 'phone', 'logo', 'banner', 'qr_code', 
+        'is_active', 'allow_pay_on_spot', 'allow_online_payment'
+    ];
 
     protected $appends = ['logo_url', 'banner_url', 'qr_code_url'];
 

@@ -12,6 +12,59 @@ use Illuminate\Support\Facades\Auth;
 
 class RestaurantManagerController extends Controller
 {
+    public function orders()
+    {
+        $user = Auth::user();
+        $orders = Order::where('restaurant_id', $user->restaurant_id)
+            ->with(['user', 'items.dish'])
+            ->latest()
+            ->paginate(15);
+        
+        return view('dashboard.restaurant.orders.index', compact('orders'));
+    }
+
+    public function menu()
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::with(['categories.dishes'])->findOrFail($user->restaurant_id);
+        
+        return view('dashboard.restaurant.menu.index', compact('restaurant'));
+    }
+
+    public function reviews()
+    {
+        $user = Auth::user();
+        $reviews = Review::where('restaurant_id', $user->restaurant_id)
+            ->with('user')
+            ->latest()
+            ->paginate(15);
+        
+        return view('dashboard.restaurant.reviews.index', compact('reviews'));
+    }
+
+    public function settings()
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        
+        return view('dashboard.restaurant.settings.index', compact('restaurant'));
+    }
+
+    public function toggleSettings(Request $request)
+    {
+        $user = Auth::user();
+        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        
+        $request->validate([
+            'setting' => 'required|string|in:allow_pay_on_spot,allow_online_payment,is_active',
+        ]);
+
+        $setting = $request->setting;
+        $restaurant->update([$setting => !$restaurant->$setting]);
+
+        return redirect()->back()->with('success', 'Paramètre mis à jour.');
+    }
+
     public function replyToReview(Request $request, $id)
     {
         $user = Auth::user();

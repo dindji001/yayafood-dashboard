@@ -30,11 +30,19 @@
             </a>
             <a href="{{ route('admin.restaurants.index') }}" class="bg-[#2C3E3F]/10 text-[#2C3E3F] border-r-4 border-[#2C3E3F] flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
                 <i data-lucide="store" class="w-5 h-5"></i>
-                Liste des Restaurants
+                Restaurants
             </a>
-            <a href="{{ route('dashboard') }}#users" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+            <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                Commandes
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="users" class="w-5 h-5"></i>
-                Utilisateurs
+                Clients
+            </a>
+            <a href="{{ route('admin.reviews.index') }}" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="star" class="w-5 h-5"></i>
+                Avis
             </a>
         </nav>
     </aside>

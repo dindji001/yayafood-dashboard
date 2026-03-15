@@ -7,11 +7,30 @@ use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Order;
+use App\Models\Review;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderItem;
 
 class AdminController extends Controller
 {
+    public function allOrders()
+    {
+        $orders = Order::with(['user', 'restaurant', 'items.dish'])
+            ->latest()
+            ->paginate(15);
+        
+        return view('dashboard.admin.orders.index', compact('orders'));
+    }
+
+    public function allReviews()
+    {
+        $reviews = Review::with(['user', 'restaurant'])
+            ->latest()
+            ->paginate(15);
+
+        return view('dashboard.admin.reviews.index', compact('reviews'));
+    }
+
     public function users()
     {
         $users = User::where('role', 'client')

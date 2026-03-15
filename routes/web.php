@@ -22,6 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin/users-list', [AdminController::class, 'users'])->name('admin.users.index');
         Route::get('/admin/users/{id}', [AdminController::class, 'userDetail'])->name('admin.users.show');
         
+        Route::get('/admin/orders', [AdminController::class, 'allOrders'])->name('admin.orders.index');
+        Route::get('/admin/reviews', [AdminController::class, 'allReviews'])->name('admin.reviews.index');
+
         Route::post('/admin/restaurants', [AdminController::class, 'createRestaurant'])->name('admin.restaurants.create');
         Route::put('/admin/restaurants/{id}', [AdminController::class, 'updateRestaurant'])->name('admin.restaurants.update');
         Route::delete('/admin/restaurants/{id}', [AdminController::class, 'deleteRestaurant'])->name('admin.restaurants.delete');
@@ -33,7 +36,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Restaurant Routes
     Route::middleware(CheckRole::class . ':restaurant')->group(function () {
+        Route::get('/restaurant/orders', [RestaurantManagerController::class, 'orders'])->name('restaurant.orders.index');
+        Route::get('/restaurant/menu', [RestaurantManagerController::class, 'menu'])->name('restaurant.menu.index');
+        Route::get('/restaurant/reviews', [RestaurantManagerController::class, 'reviews'])->name('restaurant.reviews.index');
+        Route::get('/restaurant/settings', [RestaurantManagerController::class, 'settings'])->name('restaurant.settings.index');
+
         Route::post('/restaurant/info', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
+        Route::post('/restaurant/settings/toggle', [RestaurantManagerController::class, 'toggleSettings'])->name('restaurant.settings.toggle');
         
         Route::post('/restaurant/categories', [RestaurantManagerController::class, 'createCategory'])->name('restaurant.categories.create');
         Route::put('/restaurant/categories/{id}', [RestaurantManagerController::class, 'updateCategory'])->name('restaurant.categories.update');

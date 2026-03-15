@@ -29,17 +29,25 @@
         </div>
         
         <nav class="flex-1 px-4 space-y-2 mt-4">
-            <a href="{{ route('dashboard') }}" class="sidebar-link active flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
+            <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 Tableau de bord
             </a>
-            <a href="{{ route('admin.restaurants.index') }}" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+            <a href="{{ route('admin.restaurants.index') }}" class="sidebar-link {{ request()->routeIs('admin.restaurants.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="store" class="w-5 h-5"></i>
-                Liste des Restaurants
+                Restaurants
             </a>
-            <a href="{{ route('dashboard') }}#users" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+            <a href="{{ route('admin.orders.index') }}" class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                Commandes
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="users" class="w-5 h-5"></i>
-                Utilisateurs
+                Clients
+            </a>
+            <a href="{{ route('admin.reviews.index') }}" class="sidebar-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="star" class="w-5 h-5"></i>
+                Avis
             </a>
         </nav>
 

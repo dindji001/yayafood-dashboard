@@ -32,28 +32,28 @@
         </div>
         
         <nav class="flex-1 px-4 space-y-3">
-            <a href="#dashboard" class="sidebar-link active flex items-center gap-4 p-4 rounded-2xl font-bold transition-all group">
+            <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }} flex items-center gap-4 p-4 rounded-2xl font-bold transition-all group text-gray-400 hover:bg-white/10 hover:text-white">
                 <i data-lucide="layout-grid" class="w-6 h-6"></i>
                 <span class="hidden lg:block">Tableau de bord</span>
             </a>
-            <a href="#orders" class="sidebar-link flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
+            <a href="{{ route('restaurant.orders.index') }}" class="sidebar-link {{ request()->routeIs('restaurant.orders.*') ? 'active' : '' }} flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
                 <div class="relative">
                     <i data-lucide="bell" class="w-6 h-6"></i>
-                    @if(count($liveOrders) > 0)
+                    @if(isset($liveOrders) && count($liveOrders) > 0)
                         <span class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-[#2C3E3F]"></span>
                     @endif
                 </div>
-                <span class="hidden lg:block">Commandes Live</span>
+                <span class="hidden lg:block">Commandes</span>
             </a>
-            <a href="#menu" class="sidebar-link flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
+            <a href="{{ route('restaurant.menu.index') }}" class="sidebar-link {{ request()->routeIs('restaurant.menu.*') ? 'active' : '' }} flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
                 <i data-lucide="book-open" class="w-6 h-6"></i>
                 <span class="hidden lg:block">Menu Digital</span>
             </a>
-            <a href="#reviews" class="sidebar-link flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
+            <a href="{{ route('restaurant.reviews.index') }}" class="sidebar-link {{ request()->routeIs('restaurant.reviews.*') ? 'active' : '' }} flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
                 <i data-lucide="star" class="w-6 h-6"></i>
                 <span class="hidden lg:block">Avis Clients</span>
             </a>
-            <a href="#profile" class="sidebar-link flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
+            <a href="{{ route('restaurant.settings.index') }}" class="sidebar-link {{ request()->routeIs('restaurant.settings.*') ? 'active' : '' }} flex items-center gap-4 p-4 rounded-2xl font-semibold text-gray-400 hover:bg-white/10 hover:text-white transition-all group">
                 <i data-lucide="settings" class="w-6 h-6"></i>
                 <span class="hidden lg:block">Configuration</span>
             </a>

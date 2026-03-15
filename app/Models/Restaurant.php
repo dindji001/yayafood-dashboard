@@ -32,13 +32,13 @@ class Restaurant extends Model
     public function generateQrCode()
     {
         $url = config('app.url') . '/r/' . $this->id;
-        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')
+        $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')
             ->size(500)
             ->margin(2)
             ->errorCorrection('H')
             ->generate($url);
 
-        $path = 'restaurants/qrcodes/qr_' . $this->id . '.png';
+        $path = 'restaurants/qrcodes/qr_' . $this->id . '.svg';
         \Illuminate\Support\Facades\Storage::disk('public')->put($path, $qrCode);
 
         $this->update(['qr_code' => $path]);

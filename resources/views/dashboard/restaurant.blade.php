@@ -461,6 +461,59 @@
     <script>
         lucide.createIcons();
         
+        // Handle Active State & Smooth Scroll
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const sections = document.querySelectorAll('main > div[id], main > section[id]');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 40,
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    sidebarLinks.forEach(l => l.classList.remove('active', 'text-white'));
+                    sidebarLinks.forEach(l => {
+                        if (!l.classList.contains('active')) {
+                            l.classList.add('text-gray-400');
+                        }
+                    });
+
+                    link.classList.add('active');
+                    link.classList.remove('text-gray-400');
+                    link.classList.add('text-white');
+                }
+            });
+        });
+
+        // Update active link on scroll
+        window.addEventListener('scroll', () => {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            sidebarLinks.forEach((link) => {
+                link.classList.remove("active", "text-white");
+                link.classList.add("text-gray-400");
+                if (link.getAttribute("href") === `#${current}`) {
+                    link.classList.add("active", "text-white");
+                    link.classList.remove("text-gray-400");
+                }
+            });
+        });
+
         // Auto-hide alerts after 5 seconds
         setTimeout(() => {
             const alert = document.querySelector('.animate-slide-in');

@@ -342,6 +342,56 @@
     <script>
         lucide.createIcons();
 
+        // Handle Active State & Smooth Scroll
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const sections = document.querySelectorAll('main > div[id], main > section[id]');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 40,
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    sidebarLinks.forEach(l => l.classList.remove('active', 'bg-[#2C3E3F]/10', 'text-[#2C3E3F]', 'border-r-4', 'border-[#2C3E3F]'));
+                    sidebarLinks.forEach(l => {
+                        if (!l.classList.contains('active')) {
+                            l.classList.add('text-gray-500');
+                        }
+                    });
+
+                    link.classList.add('active');
+                    link.classList.remove('text-gray-500');
+                }
+            });
+        });
+
+        // Update active link on scroll
+        window.addEventListener('scroll', () => {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute("id");
+                }
+            });
+
+            sidebarLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href") === `#${current}`) {
+                    link.classList.add("active");
+                }
+            });
+        });
+
         function filterTable(tableId, query) {
             const table = document.getElementById(tableId);
             const rows = table.getElementsByTagName('tr');

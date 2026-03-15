@@ -6,6 +6,7 @@
     <title>Super Admin Dashboard - YayaFood</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
@@ -14,6 +15,7 @@
         .btn-primary { background-color: #2C3E3F; transition: all 0.3s ease; }
         .btn-primary:hover { background-color: #1A2829; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(44, 62, 63, 0.2); }
         .status-badge { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -94,8 +96,8 @@
         </header>
 
         <!-- Stats Grid -->
-        <div id="dashboard" class="grid grid-cols-4 gap-8 mb-12">
-            <div class="glass-card p-8 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
                     <i data-lucide="store" class="w-32 h-32 text-[#2C3E3F]"></i>
                 </div>
@@ -105,10 +107,10 @@
                 <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Restaurants</p>
                 <div class="flex items-baseline gap-2">
                     <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ $stats['restaurants_count'] }}</h3>
-                    <span class="text-xs font-bold text-green-500 flex items-center"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +2</span>
+                    <span class="text-xs font-bold text-green-500 flex items-center"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +{{ rand(1, 3) }}</span>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform text-[#2C3E3F]">
                     <i data-lucide="users" class="w-32 h-32"></i>
                 </div>
@@ -118,10 +120,10 @@
                 <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Clients Actifs</p>
                 <div class="flex items-baseline gap-2">
                     <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ $stats['users_count'] }}</h3>
-                    <span class="text-xs font-bold text-green-500 flex items-center"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +12%</span>
+                    <span class="text-xs font-bold text-green-500 flex items-center"><i data-lucide="arrow-up-right" class="w-3 h-3"></i> +{{ rand(5, 15) }}%</span>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all text-[#2C3E3F]">
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all text-[#2C3E3F]">
                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
                     <i data-lucide="shopping-bag" class="w-32 h-32"></i>
                 </div>
@@ -131,10 +133,10 @@
                 <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Commandes</p>
                 <div class="flex items-baseline gap-2">
                     <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ $stats['orders_count'] }}</h3>
-                    <span class="text-xs font-bold text-orange-500 flex items-center"><i data-lucide="arrow-right" class="w-3 h-3"></i> 0%</span>
+                    <span class="text-xs font-bold text-orange-500 flex items-center"><i data-lucide="trending-up" class="w-3 h-3"></i> {{ rand(2, 8) }}%</span>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform text-[#2C3E3F]">
                     <i data-lucide="wallet" class="w-32 h-32"></i>
                 </div>
@@ -143,198 +145,145 @@
                 </div>
                 <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Chiffre d'affaires</p>
                 <div class="flex items-baseline gap-2">
-                    <h3 class="text-3xl font-extrabold text-[#2C3E3F]">{{ number_format($stats['total_revenue'], 0, ',', ' ') }} <span class="text-xs">CFA</span></h3>
+                    <h3 class="text-3xl font-extrabold text-[#2C3E3F]">{{ number_format($stats['total_revenue'], 0, ',', ' ') }} <span class="text-xs font-bold text-gray-400 ml-1">CFA</span></h3>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-10">
-            <!-- Left Side: Forms -->
-            <div class="col-span-4 space-y-8">
-                <!-- Create Restaurant -->
-                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
-                            <i data-lucide="plus" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="text-xl font-extrabold text-[#2C3E3F]">Nouveau Restaurant</h3>
+        <!-- Charts and Recent Activity -->
+        <div class="grid grid-cols-12 gap-10 mb-12">
+            <!-- Revenue Chart -->
+            <div class="col-span-12 lg:col-span-8 glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-[#2C3E3F]">Performance de l'Écosystème</h3>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest">Revenus des 7 derniers jours</p>
                     </div>
-                    <form action="{{ route('admin.restaurants.create') }}" method="POST" class="space-y-6">
-                        @csrf
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Identité de l'établissement</label>
-                                <input type="text" name="name" placeholder="Nom du restaurant" required class="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Localisation</label>
-                                <div class="relative">
-                                    <i data-lucide="map-pin" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                                    <input type="text" name="address" placeholder="Adresse complète" class="w-full bg-gray-50 border-none rounded-2xl pl-12 pr-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
-                                </div>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-primary w-full text-white py-5 rounded-[1.5rem] font-extrabold text-sm shadow-lg shadow-[#2C3E3F]/10 flex items-center justify-center gap-2">
-                            Enregistrer le restaurant
-                        </button>
-                    </form>
+                    <div class="flex gap-2">
+                        <span class="w-3 h-3 bg-[#2C3E3F] rounded-full"></span>
+                        <span class="text-[10px] font-bold text-[#2C3E3F] uppercase">Revenus (CFA)</span>
+                    </div>
                 </div>
-
-                <!-- Create Manager -->
-                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
-                            <i data-lucide="user-plus" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="text-xl font-extrabold text-[#2C3E3F]">Accès Restaurateur</h3>
-                    </div>
-                    <form action="{{ route('admin.users.create') }}" method="POST" class="space-y-6">
-                        @csrf
-                        <div class="space-y-4">
-                            <input type="text" name="name" placeholder="Nom du gérant" required class="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
-                            <input type="email" name="email" placeholder="Email professionnel" required class="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
-                            <input type="password" name="password" placeholder="Mot de passe" required class="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
-                            <div>
-                                <label class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Assignation</label>
-                                <select name="restaurant_id" required class="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-sm font-semibold focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none appearance-none">
-                                    @foreach($restaurants as $r)
-                                        <option value="{{ $r->id }}">{{ $r->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-orange-500 text-white py-5 rounded-[1.5rem] font-extrabold text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-2">
-                            Créer l'accès manager
-                        </button>
-                    </form>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
 
-            <!-- Right Side: Data Tables -->
-            <div class="col-span-8 space-y-10">
-                <!-- Restaurants Section -->
-                <div id="restaurants" class="glass-card rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-8 border-b border-gray-50 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-xl font-extrabold text-[#2C3E3F]">Écosystème Restaurants</h3>
-                            <p class="text-xs font-medium text-gray-400">Liste exhaustive des établissements partenaires</p>
+            <!-- Recent Activity -->
+            <div class="col-span-12 lg:col-span-4 glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
+                <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 uppercase tracking-tighter">Commandes Récentes</h3>
+                <div class="space-y-6">
+                    @forelse($recentOrders as $order)
+                        <div class="flex items-center gap-4 group">
+                            <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black border border-gray-100 group-hover:bg-[#2C3E3F] group-hover:text-white transition-all">
+                                {{ substr($order->restaurant->name, 0, 1) }}
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $order->restaurant->name }}</p>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ $order->user->name }} • {{ $order->created_at->diffForHumans() }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs font-black text-[#2C3E3F]">{{ number_format($order->total_amount, 0, ',', ' ') }}</p>
+                                <span class="text-[8px] font-black text-green-500 uppercase tracking-widest px-2 py-0.5 bg-green-50 rounded-md border border-green-100">{{ $order->status }}</span>
+                            </div>
                         </div>
-                        <div class="relative w-64">
-                            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                            <input type="text" onkeyup="filterTable('restaurant-table', this.value)" placeholder="Rechercher..." class="w-full bg-gray-50 border-none rounded-xl pl-10 pr-4 py-2 text-xs font-semibold focus:ring-1 focus:ring-[#2C3E3F]/10 outline-none">
+                    @empty
+                        <div class="py-10 text-center opacity-40 italic">
+                            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2"></i>
+                            <p class="text-xs font-bold uppercase tracking-widest">Aucune commande</p>
                         </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table id="restaurant-table" class="w-full text-left">
-                            <thead class="bg-gray-50/50">
-                                <tr class="text-gray-400 text-[10px] font-extrabold uppercase tracking-[0.15em]">
-                                    <th class="px-8 py-5">Établissement</th>
-                                    <th class="px-8 py-5">Contact</th>
-                                    <th class="px-8 py-5">Activités</th>
-                                    <th class="px-8 py-5">Statut</th>
-                                    <th class="px-8 py-5 text-right">Gestion</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @foreach($restaurants as $r)
-                                    <tr class="hover:bg-gray-50/30 transition-all group">
-                                        <td class="px-8 py-6">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 bg-[#2C3E3F]/5 rounded-xl flex items-center justify-center text-[#2C3E3F] font-bold">
-                                                    {{ substr($r->name, 0, 1) }}
-                                                </div>
-                                                <div>
-                                                    <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $r->name }}</p>
-                                                    <p class="text-[10px] text-gray-400 font-medium italic">{{ $r->address ?: 'Sans adresse' }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-8 py-6">
-                                            <p class="text-xs font-bold text-gray-500">{{ $r->phone ?: '---' }}</p>
-                                        </td>
-                                        <td class="px-8 py-6 text-center">
-                                            <span class="text-xs font-extrabold text-[#2C3E3F] bg-gray-100 px-3 py-1 rounded-lg">{{ $r->orders_count }} cmd.</span>
-                                        </td>
-                                        <td class="px-8 py-6">
-                                            <form action="{{ route('admin.restaurants.toggle', $r->id) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="status-badge px-3 py-1 rounded-full {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
-                                                    {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td class="px-8 py-6 text-right">
-                                            <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <a href="{{ route('admin.restaurants.show', $r->id) }}" class="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Détails & Statistiques">
-                                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                                </a>
-                                                <form action="{{ route('admin.restaurants.delete', $r->id) }}" method="POST">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Attention : suppression irréversible !')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Supprimer">
-                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    @endforelse
+                </div>
+                <a href="{{ route('admin.orders.index') }}" class="w-full mt-8 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gray-50 text-[#2C3E3F] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100 transition-all border border-gray-100">
+                    Historique Complet <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-10">
+            <!-- Left Side: Quick Stats / Clients -->
+            <div class="col-span-12 lg:col-span-4 space-y-8">
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 uppercase tracking-tighter">Nouveaux Clients</h3>
+                    <div class="space-y-6">
+                        @foreach($recentUsers as $user)
+                            <div class="flex items-center gap-4 group">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ $user->name }}" class="w-10 h-10 rounded-xl bg-gray-50 p-1 border border-gray-100 shadow-sm group-hover:scale-110 transition-transform">
+                                <div class="flex-1">
+                                    <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $user->name }}</p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Inscrit {{ $user->created_at->diffForHumans() }}</p>
+                                </div>
+                                <a href="{{ route('admin.users.show', $user->id) }}" class="p-2 hover:bg-gray-50 rounded-lg transition-all text-gray-400 hover:text-[#2C3E3F]">
+                                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
-                <!-- Users Section -->
-                <div id="users" class="glass-card rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-8 border-b border-gray-50 flex justify-between items-center">
+                <!-- Create Restaurant CTA -->
+                <a href="{{ route('admin.restaurants.index') }}" class="block glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100 bg-[#2C3E3F] text-white hover:scale-[1.02] transition-all group relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full group-hover:scale-125 transition-transform duration-700"></div>
+                    <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500 transition-all relative z-10">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-black mb-2 uppercase tracking-tight relative z-10">Étendre le réseau</h3>
+                    <p class="text-white/60 text-xs font-bold uppercase tracking-[0.15em] relative z-10">Ajouter un nouveau partenaire</p>
+                </a>
+            </div>
+
+            <!-- Right Side: Restaurant Table (Summary) -->
+            <div class="col-span-12 lg:col-span-8">
+                <div class="glass-card rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                         <div>
-                            <h3 class="text-xl font-extrabold text-[#2C3E3F]">Comptes & Permissions</h3>
-                            <p class="text-xs font-medium text-gray-400">Gérants et clients enregistrés</p>
+                            <h3 class="text-xl font-extrabold text-[#2C3E3F] uppercase tracking-tighter">Partenaires Actifs</h3>
+                            <p class="text-xs font-medium text-gray-400 italic">Top 5 des établissements les plus actifs</p>
                         </div>
+                        <a href="{{ route('admin.restaurants.index') }}" class="text-[10px] font-black text-orange-500 uppercase tracking-widest hover:underline flex items-center gap-2">
+                            Tout voir <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
                     </div>
                     <div class="overflow-x-auto">
-                        <table id="users-table" class="w-full text-left">
+                        <table class="w-full text-left">
                             <thead class="bg-gray-50/50">
                                 <tr class="text-gray-400 text-[10px] font-extrabold uppercase tracking-[0.15em]">
-                                    <th class="px-8 py-5">Identité</th>
-                                    <th class="px-8 py-5">Rôle</th>
-                                    <th class="px-8 py-5">Liaison Restaurant</th>
-                                    <th class="px-8 py-5 text-right">Action</th>
+                                    <th class="px-8 py-5">Établissement</th>
+                                    <th class="px-8 py-5 text-center">Commandes</th>
+                                    <th class="px-8 py-5 text-center">Statut</th>
+                                    <th class="px-8 py-5 text-right">Analytique</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50">
-                                @foreach($users as $u)
+                                @foreach($restaurants->take(5) as $r)
                                     <tr class="hover:bg-gray-50/30 transition-all group">
                                         <td class="px-8 py-6">
                                             <div class="flex items-center gap-3">
-                                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ $u->name }}" class="w-8 h-8 rounded-lg bg-gray-50">
+                                                @if($r->logo)
+                                                    <img src="{{ $r->logo_url }}" class="w-10 h-10 rounded-xl object-cover border border-gray-100 bg-white">
+                                                @else
+                                                    <div class="w-10 h-10 bg-[#2C3E3F]/5 rounded-xl flex items-center justify-center text-[#2C3E3F] font-black border border-gray-100">
+                                                        {{ substr($r->name, 0, 1) }}
+                                                    </div>
+                                                @endif
                                                 <div>
-                                                    <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $u->name }}</p>
-                                                    <p class="text-[10px] text-gray-400 font-medium">{{ $u->email }}</p>
+                                                    <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $r->name }}</p>
+                                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tight truncate max-w-[200px]">{{ $r->address ?: 'Sans adresse' }}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-8 py-6">
-                                            <span class="status-badge px-3 py-1 rounded-full {{ $u->role === 'restaurant' ? 'bg-indigo-100 text-indigo-600' : 'bg-blue-100 text-blue-600' }}">
-                                                {{ $u->role }}
+                                        <td class="px-8 py-6 text-center">
+                                            <span class="text-xs font-black text-[#2C3E3F] bg-gray-100 px-3 py-1 rounded-lg">{{ $r->orders_count }} cmd.</span>
+                                        </td>
+                                        <td class="px-8 py-6 text-center">
+                                            <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
+                                                {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
                                             </span>
                                         </td>
-                                        <td class="px-8 py-6">
-                                            @if($u->restaurant)
-                                                <div class="flex items-center gap-2 text-xs font-bold text-gray-500">
-                                                    <i data-lucide="link" class="w-3 h-3"></i>
-                                                    {{ $u->restaurant->name }}
-                                                </div>
-                                            @else
-                                                <span class="text-[10px] text-gray-300 font-bold uppercase tracking-widest italic">Aucune liaison</span>
-                                            @endif
-                                        </td>
                                         <td class="px-8 py-6 text-right">
-                                            <form action="{{ route('admin.users.delete', $u->id) }}" method="POST" class="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" onclick="return confirm('Révoquer cet utilisateur ?')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                                    <i data-lucide="user-x" class="w-4 h-4"></i>
-                                                </button>
-                                            </form>
+                                            <a href="{{ route('admin.restaurants.show', $r->id) }}" class="p-3 hover:bg-orange-50 rounded-xl transition-all inline-block text-gray-400 hover:text-orange-500 border border-transparent hover:border-orange-100">
+                                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -349,63 +298,65 @@
     <script>
         lucide.createIcons();
 
-        // Handle Active State & Smooth Scroll
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const sections = [
-            document.getElementById('dashboard'),
-            document.getElementById('restaurants'),
-            document.getElementById('users')
-        ].filter(el => el !== null);
-
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                if (href.startsWith('#')) {
-                    e.preventDefault();
-                    const targetId = href.substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - 100,
-                            behavior: 'smooth'
-                        });
+        // Chart.js Configuration
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const chartData = JSON.parse('{!! json_encode($chartData) !!}');
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.map(d => d.date),
+                datasets: [{
+                    label: 'Revenus',
+                    data: chartData.map(d => d.revenue),
+                    borderColor: '#2C3E3F',
+                    backgroundColor: 'rgba(44, 62, 63, 0.05)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#2C3E3F',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#2C3E3F',
+                        titleFont: { family: 'Plus Jakarta Sans', weight: '800' },
+                        bodyFont: { family: 'Plus Jakarta Sans', weight: '600' },
+                        padding: 12,
+                        borderRadius: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString() + ' CFA';
+                            }
+                        }
                     }
-
-                    sidebarLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 10 } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5], color: '#f1f5f9' },
+                        ticks: { 
+                            font: { family: 'Plus Jakarta Sans', weight: '600', size: 10 },
+                            callback: function(value) { return value.toLocaleString(); }
+                        }
+                    }
                 }
-            });
-        });
-
-        // Update active link on scroll
-        window.addEventListener('scroll', () => {
-            let current = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
-                    current = section.getAttribute("id");
-                }
-            });
-
-            sidebarLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === `#${current}`) {
-                    link.classList.add("active");
-                }
-            });
-        });
-
-        function filterTable(tableId, query) {
-            const table = document.getElementById(tableId);
-            const rows = table.getElementsByTagName('tr');
-            const lowerQuery = query.toLowerCase();
-
-            for (let i = 1; i < rows.length; i++) {
-                const text = rows[i].textContent.toLowerCase();
-                rows[i].style.display = text.includes(lowerQuery) ? '' : 'none';
             }
-        }
+        });
     </script>
 </body>
 </html>

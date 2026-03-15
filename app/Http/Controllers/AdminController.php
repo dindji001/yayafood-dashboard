@@ -114,8 +114,8 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|digits:8',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         $restaurantData = $request->only(['name', 'address', 'phone', 'description']);

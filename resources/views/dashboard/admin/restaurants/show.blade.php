@@ -147,13 +147,10 @@
                 <h3 class="text-3xl font-black text-[#2C3E3F]">{{ number_format($restaurant->reviews()->avg('rating') ?: 0, 1) }} ★</h3>
             </div>
             <div class="glass-card p-6 rounded-[2.5rem] shadow-sm flex flex-col items-center justify-center text-center group relative overflow-hidden">
-                @if($restaurant->qr_code)
-                    <img src="{{ $restaurant->qr_code_url }}" class="w-20 h-20 mb-2 relative z-10" alt="QR Code">
-                    <a href="{{ $restaurant->qr_code_url }}" download class="text-[8px] font-black text-orange-500 uppercase tracking-widest hover:underline relative z-10">Télécharger</a>
-                @else
-                    <i data-lucide="qr-code" class="w-12 h-12 text-gray-200 mb-2"></i>
-                    <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Pas de QR</p>
-                @endif
+                <div class="mb-2 relative z-10">
+                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(80)->margin(1)->generate(config('app.url') . '/r/' . $restaurant->id) !!}
+                </div>
+                <a href="{{ $restaurant->qr_code_url }}" download class="text-[8px] font-black text-orange-500 uppercase tracking-widest hover:underline relative z-10">Télécharger</a>
                 <div class="absolute inset-0 bg-[#2C3E3F] translate-y-full group-hover:translate-y-0 transition-transform flex items-center justify-center p-4">
                     <p class="text-[8px] font-black text-white uppercase leading-relaxed">Le QR Code permet l'accès au menu digital</p>
                 </div>

@@ -151,15 +151,10 @@
                     <p class="text-gray-400 font-medium italic">Vos clients scannent et commandent en 1 clic.</p>
                 </div>
 
-                <div class="w-64 h-64 bg-gray-50 rounded-[2rem] p-6 border border-gray-100 shadow-inner mb-10 flex items-center justify-center relative overflow-hidden group">
-                    @if($restaurant->qr_code)
-                        <img src="{{ $restaurant->qr_code_url }}" class="w-full h-full object-contain relative z-10" alt="QR Code">
-                    @else
-                        <div class="text-center p-8">
-                            <i data-lucide="qr-code" class="w-16 h-16 text-gray-200 mx-auto mb-4"></i>
-                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Aucun QR Code généré</p>
-                        </div>
-                    @endif
+                <div class="w-64 h-64 bg-white rounded-[2rem] p-6 border border-gray-100 shadow-inner mb-10 flex items-center justify-center relative overflow-hidden group">
+                    <div class="relative z-10">
+                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->margin(1)->errorCorrection('H')->generate(config('app.url') . '/r/' . $restaurant->id) !!}
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-sm">

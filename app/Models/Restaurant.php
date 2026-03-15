@@ -38,7 +38,12 @@ class Restaurant extends Model
             ->errorCorrection('H')
             ->generate($url);
 
-        $path = 'restaurants/qrcodes/qr_' . $this->id . '.svg';
+        $dir = 'restaurants/qrcodes';
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($dir)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($dir);
+        }
+
+        $path = $dir . '/qr_' . $this->id . '.svg';
         \Illuminate\Support\Facades\Storage::disk('public')->put($path, $qrCode);
 
         $this->update(['qr_code' => $path]);
@@ -48,7 +53,7 @@ class Restaurant extends Model
 
     public function getQrCodeUrlAttribute()
     {
-        return $this->qr_code ? \Illuminate\Support\Facades\Storage::url($this->qr_code) : null;
+        return $this->qr_code ? asset('storage/' . $this->qr_code) : null;
     }
 
     public function users()

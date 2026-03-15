@@ -83,9 +83,15 @@
             @foreach($restaurants as $r)
                 <div class="glass-card rounded-[2.5rem] p-8 hover:shadow-2xl transition-all group">
                     <div class="flex justify-between items-start mb-6">
-                        <div class="w-16 h-16 bg-[#F1F5F4] rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-2xl border border-gray-100 shadow-sm">
-                            {{ substr($r->name, 0, 1) }}
-                        </div>
+                        @if($r->logo)
+                            <div class="w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white">
+                                <img src="{{ $r->logo_url }}" alt="{{ $r->name }}" class="w-full h-full object-cover">
+                            </div>
+                        @else
+                            <div class="w-16 h-16 bg-[#F1F5F4] rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-2xl border border-gray-100 shadow-sm">
+                                {{ substr($r->name, 0, 1) }}
+                            </div>
+                        @endif
                         <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
                             {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
                         </span>

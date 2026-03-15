@@ -45,7 +45,7 @@
             <!-- Cover Image -->
             <div class="w-full h-64 rounded-[3rem] overflow-hidden shadow-lg border border-gray-100 bg-gray-200">
                 @if($restaurant->banner)
-                    <img src="{{ Storage::url($restaurant->banner) }}" class="w-full h-full object-cover" alt="Bannière {{ $restaurant->name }}">
+                    <img src="{{ $restaurant->banner_url }}" class="w-full h-full object-cover" alt="Bannière {{ $restaurant->name }}">
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-r from-[#2C3E3F] to-[#1A2829]">
                         <i data-lucide="image" class="w-12 h-12 text-white/20"></i>
@@ -58,7 +58,7 @@
                 <div class="w-32 h-32 bg-white rounded-[2.5rem] shadow-2xl p-2 border-4 border-white">
                     <div class="w-full h-full rounded-[2rem] overflow-hidden bg-gray-50 flex items-center justify-center">
                         @if($restaurant->logo)
-                            <img src="{{ Storage::url($restaurant->logo) }}" class="w-full h-full object-cover" alt="Logo {{ $restaurant->name }}">
+                            <img src="{{ $restaurant->logo_url }}" class="w-full h-full object-cover" alt="Logo {{ $restaurant->name }}">
                         @else
                             <span class="text-4xl font-black text-[#2C3E3F]">{{ substr($restaurant->name, 0, 1) }}</span>
                         @endif

@@ -85,4 +85,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantAccessSession::class);
     }
+
+    public function openingHours()
+    {
+        return $this->hasMany(OpeningHour::class)->orderBy('day_of_week');
+    }
 }

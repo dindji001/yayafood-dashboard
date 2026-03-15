@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin')->middleware(CheckRole::class . ':super_admin')->group(function () {
         Route::get('/stats', [AdminController::class, 'stats']);
         Route::get('/restaurants', [AdminController::class, 'restaurantsList']);
+        Route::get('/restaurants/{id}', [AdminController::class, 'restaurantDetails']);
         Route::post('/restaurants', [AdminController::class, 'createRestaurant']);
         Route::get('/users', [AdminController::class, 'usersList']);
         Route::post('/users', [AdminController::class, 'createRestaurantUser']);
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/stats', [ManagerRestaurantController::class, 'stats']);
         Route::get('/menu', [ManagerRestaurantController::class, 'menu']);
         Route::get('/reviews', [ManagerRestaurantController::class, 'reviews']);
+        Route::get('/opening-hours', [ManagerRestaurantController::class, 'getOpeningHours']);
+        Route::put('/opening-hours', [ManagerRestaurantController::class, 'updateOpeningHours']);
         Route::put('/info', [ManagerRestaurantController::class, 'updateInfo']);
         Route::post('/categories', [ManagerRestaurantController::class, 'createCategory']);
         Route::post('/dishes', [ManagerRestaurantController::class, 'createDish']);

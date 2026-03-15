@@ -18,7 +18,7 @@ class RestaurantController extends Controller
 
     public function show($id)
     {
-        $restaurant = Restaurant::with(['categories.dishes'])->findOrFail($id);
+        $restaurant = Restaurant::with(['categories.dishes', 'openingHours'])->findOrFail($id);
         return response()->json($restaurant);
     }
 }

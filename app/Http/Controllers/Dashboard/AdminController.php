@@ -24,7 +24,13 @@ class AdminController extends Controller
 
     public function restaurantsList()
     {
-        return response()->json(Restaurant::withCount('orders')->get());
+        return response()->json(Restaurant::with(['openingHours'])->withCount('orders')->get());
+    }
+
+    public function restaurantDetails($id)
+    {
+        $restaurant = Restaurant::with(['openingHours', 'users', 'categories.dishes'])->findOrFail($id);
+        return response()->json($restaurant);
     }
 
     public function createRestaurant(Request $request)

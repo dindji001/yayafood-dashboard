@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Dish;
 use App\Models\Order;
 use App\Models\Review;
+use App\Models\OpeningHour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -138,5 +139,46 @@ class RestaurantController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         return response()->json($orders);
+    }
+
+    public function updateOpeningHours(Request $request)
+    {
+        $restaurantId = $request->user()->restaurant_id;
+        $validator = Validator::make($request->all(), [
+            'hours' => 'required|array|size:7',
+            'hours.*.day_of_week' => 'required|integer|min:0|max:6',
+            'hours.*.open_time' => 'nullable|string',
+            'hours.*.close_time' => 'nullable|string',
+            'hours.*.is_closed' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        foreach ($request->hours as $hourData) {
+            OpeningHour::updateOrCreate(
+                [
+                    'restaurant_id' => $restaurantId,
+                    'day_of_week' => $hourData['day_of_week'],
+                ],
+                [
+                    'open_time' => $hourData['open_time'],
+                    'close_time' => $hourData['close_time'],
+                    'is_closed' => $hourData['is_closed'],
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Horaires mis à jour avec succès']);
+    }
+
+    public function getOpeningHours(Request $request)
+    {
+        $restaurantId = $request->user()->restaurant_id;
+        $hours = OpeningHour::where('restaurant_id', $restaurantId)
+            ->orderBy('day_of_week')
+            ->get();
+        return response()->json($hours);
     }
 }

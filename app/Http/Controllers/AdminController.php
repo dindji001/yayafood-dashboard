@@ -109,11 +109,26 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
+            'address' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'description' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        Restaurant::create($request->all());
+        $data = $request->only(['name', 'address', 'phone', 'description']);
+        
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('restaurants/logos', 'public');
+        }
+        
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('restaurants/banners', 'public');
+        }
+
+        $data['is_active'] = true;
+
+        Restaurant::create($data);
 
         return redirect()->back()->with('success', 'Restaurant créé avec succès.');
     }

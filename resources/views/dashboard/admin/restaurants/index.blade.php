@@ -45,7 +45,39 @@
                 <h2 class="text-4xl font-extrabold text-[#2C3E3F] tracking-tight mb-2">ÉCOSYSTÈME RESTAURANTS</h2>
                 <p class="text-gray-400 font-medium">Analyse et performance de vos partenaires.</p>
             </div>
+            <button onclick="openModal('createRestaurantModal')" class="bg-[#2C3E3F] hover:bg-orange-500 text-white px-8 py-4 rounded-[1.5rem] font-bold transition-all flex items-center gap-3 shadow-lg shadow-[#2C3E3F]/10">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                Nouveau Restaurant
+            </button>
         </header>
+
+        @if(session('success'))
+            <div class="mb-8 p-6 bg-green-50 border border-green-100 rounded-[2rem] flex items-center gap-4 text-green-600 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                    <i data-lucide="check-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <p class="font-black uppercase text-[10px] tracking-widest mb-0.5">Succès</p>
+                    <p class="font-bold">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-8 p-6 bg-red-50 border border-red-100 rounded-[2rem] flex items-center gap-4 text-red-600 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                    <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <p class="font-black uppercase text-[10px] tracking-widest mb-0.5">Erreur</p>
+                    <ul class="list-disc list-inside font-bold">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             @foreach($restaurants as $r)
@@ -83,6 +115,86 @@
         </div>
     </main>
 
-    <script>lucide.createIcons();</script>
+    <!-- Modal de création -->
+    <div id="createRestaurantModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity" onclick="closeModal('createRestaurantModal')"></div>
+            
+            <div class="relative bg-white rounded-[2.5rem] w-full max-w-2xl p-10 shadow-2xl border border-gray-100 overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-orange-500"></div>
+                
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-3xl font-extrabold text-[#2C3E3F] tracking-tight">Nouveau Partenaire</h3>
+                        <p class="text-gray-400 font-medium">Configurez un nouvel établissement yayaFood.</p>
+                    </div>
+                    <button onclick="closeModal('createRestaurantModal')" class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <form action="{{ route('admin.restaurants.create') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Nom du Restaurant</label>
+                            <input type="text" name="name" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="ex: Le Petit Bistro">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Téléphone</label>
+                            <input type="text" name="phone" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="+33 ...">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Adresse Complète</label>
+                        <input type="text" name="address" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold" placeholder="ex: 123 Rue de la Gastronomie, Paris">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Description</label>
+                        <textarea name="description" rows="3" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold resize-none" placeholder="Décrivez le restaurant en quelques mots..."></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Logo</label>
+                            <input type="file" name="logo" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Image de Couverture</label>
+                            <input type="file" name="banner" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3 text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#2C3E3F] file:text-white hover:file:bg-orange-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="closeModal('createRestaurantModal')" class="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-extrabold text-xs uppercase tracking-[0.2em] hover:bg-gray-200 transition-all">Annuler</button>
+                        <button type="submit" class="flex-[2] bg-teal-600 text-white py-4 rounded-2xl font-extrabold text-xs uppercase tracking-[0.2em] hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20">Créer le restaurant</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('createRestaurantModal');
+            }
+        });
+    </script>
 </body>
 </html>

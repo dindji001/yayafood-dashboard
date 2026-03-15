@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/restaurant/menu', [RestaurantManagerController::class, 'menu'])->name('restaurant.menu.index');
         Route::get('/restaurant/reviews', [RestaurantManagerController::class, 'reviews'])->name('restaurant.reviews.index');
         Route::get('/restaurant/settings', [RestaurantManagerController::class, 'settings'])->name('restaurant.settings.index');
+        Route::put('/restaurant/opening-hours', [RestaurantManagerController::class, 'updateOpeningHours'])->name('restaurant.opening-hours.update');
 
         Route::post('/restaurant/settings/update', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
     Route::post('/restaurant/settings/delete-request', [RestaurantManagerController::class, 'requestDeletion'])->name('restaurant.settings.delete-request');

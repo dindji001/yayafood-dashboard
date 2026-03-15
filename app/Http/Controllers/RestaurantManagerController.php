@@ -8,7 +8,9 @@ use App\Models\Dish;
 use App\Models\Restaurant;
 use App\Models\Review;
 use App\Models\Order;
+use App\Models\OpeningHour;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class RestaurantManagerController extends Controller
 {
@@ -45,9 +47,41 @@ class RestaurantManagerController extends Controller
     public function settings()
     {
         $user = Auth::user();
-        $restaurant = Restaurant::findOrFail($user->restaurant_id);
+        $restaurant = Restaurant::with('openingHours')->findOrFail($user->restaurant_id);
         
         return view('dashboard.restaurant.settings.index', compact('restaurant'));
+    }
+
+    public function updateOpeningHours(Request $request)
+    {
+        $user = Auth::user();
+        $restaurantId = $user->restaurant_id;
+
+        $request->validate([
+            'hours' => 'required|array|size:7',
+            'hours.*.day_of_week' => 'required|integer|min:0|max:6',
+            'hours.*.open_time' => 'nullable|string',
+            'hours.*.close_time' => 'nullable|string',
+            'hours.*.is_closed' => 'nullable',
+            'hours.*.is_24h' => 'nullable',
+        ]);
+
+        foreach ($request->hours as $hourData) {
+            OpeningHour::updateOrCreate(
+                [
+                    'restaurant_id' => $restaurantId,
+                    'day_of_week' => $hourData['day_of_week'],
+                ],
+                [
+                    'open_time' => $hourData['open_time'],
+                    'close_time' => $hourData['close_time'],
+                    'is_closed' => isset($hourData['is_closed']),
+                    'is_24h' => isset($hourData['is_24h']),
+                ]
+            );
+        }
+
+        return redirect()->back()->with('success', 'Horaires mis à jour.');
     }
 
     public function toggleSettings(Request $request)

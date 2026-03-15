@@ -390,6 +390,10 @@
                             <input type="text" name="name" value="{{ $restaurant->name }}" required class="w-full bg-gray-50 border-none rounded-2xl px-6 py-5 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
                         </div>
                         <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 px-2">Description</label>
+                            <textarea name="description" rows="4" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-5 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none" placeholder="Décrivez votre restaurant...">{{ $restaurant->description }}</textarea>
+                        </div>
+                        <div>
                             <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 px-2">Adresse de l'établissement</label>
                             <input type="text" name="address" value="{{ $restaurant->address }}" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-5 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
                         </div>

@@ -40,14 +40,70 @@
     </aside>
 
     <main class="flex-1 ml-72 p-10">
+        <!-- Restaurant Brand Section -->
+        <div class="mb-12 relative">
+            <!-- Cover Image -->
+            <div class="w-full h-64 rounded-[3rem] overflow-hidden shadow-lg border border-gray-100 bg-gray-200">
+                @if($restaurant->banner)
+                    <img src="{{ Storage::url($restaurant->banner) }}" class="w-full h-full object-cover" alt="Bannière {{ $restaurant->name }}">
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-r from-[#2C3E3F] to-[#1A2829]">
+                        <i data-lucide="image" class="w-12 h-12 text-white/20"></i>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Logo & Title Overlay -->
+            <div class="flex items-end gap-8 px-12 -mt-16 relative z-10">
+                <div class="w-32 h-32 bg-white rounded-[2.5rem] shadow-2xl p-2 border-4 border-white">
+                    <div class="w-full h-full rounded-[2rem] overflow-hidden bg-gray-50 flex items-center justify-center">
+                        @if($restaurant->logo)
+                            <img src="{{ Storage::url($restaurant->logo) }}" class="w-full h-full object-cover" alt="Logo {{ $restaurant->name }}">
+                        @else
+                            <span class="text-4xl font-black text-[#2C3E3F]">{{ substr($restaurant->name, 0, 1) }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="mb-4 flex-1">
+                    <h2 class="text-4xl font-black text-[#2C3E3F] tracking-tight drop-shadow-sm bg-white/80 backdrop-blur-md px-6 py-2 rounded-2xl inline-block">{{ $restaurant->name }}</h2>
+                    <div class="flex items-center gap-4 mt-3">
+                        <span class="px-4 py-1.5 bg-green-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-green-500/20">
+                            {{ $restaurant->is_active ? 'Opérationnel' : 'Suspendu' }}
+                        </span>
+                        <p class="text-gray-500 font-bold text-sm flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-orange-500"></i> {{ $restaurant->address ?: 'Adresse non renseignée' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description Section -->
+        <div class="glass-card rounded-[2.5rem] p-10 mb-12 shadow-sm border border-gray-100">
+            <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-4 flex items-center gap-3">
+                <i data-lucide="info" class="w-6 h-6 text-orange-500"></i>
+                À propos de l'établissement
+            </h3>
+            <p class="text-gray-600 leading-relaxed font-medium">
+                {{ $restaurant->description ?: "Aucune description n'a encore été fournie par le restaurateur." }}
+            </p>
+            @if($restaurant->phone)
+                <div class="mt-6 pt-6 border-t border-gray-50 flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact :</span>
+                        <span class="text-sm font-bold text-[#2C3E3F]">{{ $restaurant->phone }}</span>
+                    </div>
+                </div>
+            @endif
+        </div>
+
         <header class="flex justify-between items-center mb-12">
             <div class="flex items-center gap-6">
                 <a href="{{ route('admin.restaurants.index') }}" class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all">
                     <i data-lucide="chevron-left" class="w-5 h-5 text-[#2C3E3F]"></i>
                 </a>
                 <div>
-                    <h2 class="text-4xl font-extrabold text-[#2C3E3F] tracking-tight uppercase">{{ $restaurant->name }}</h2>
-                    <p class="text-gray-400 font-medium">Analyse approfondie des performances.</p>
+                    <h2 class="text-2xl font-extrabold text-[#2C3E3F] tracking-tight uppercase">Tableau de Performance</h2>
                 </div>
             </div>
             <div class="flex gap-3">

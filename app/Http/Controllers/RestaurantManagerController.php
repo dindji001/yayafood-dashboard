@@ -36,6 +36,7 @@ class RestaurantManagerController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'logo' => 'nullable|image|max:2048',

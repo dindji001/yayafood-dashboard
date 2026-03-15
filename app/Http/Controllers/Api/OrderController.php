@@ -35,6 +35,8 @@ class OrderController extends Controller
             'items.*.dish_id' => 'required|exists:dishes,id',
             'items.*.quantity' => 'required|integer|min:1',
             'table_number' => 'nullable|string',
+            'payment_method' => 'nullable|string',
+            'payment_timing' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -47,6 +49,9 @@ class OrderController extends Controller
             'total_amount' => 0, // Sera calculé plus bas
             'status' => 'pending',
             'table_number' => $request->table_number,
+            'payment_method' => $request->payment_method ?? 'cash',
+            'payment_timing' => $request->payment_timing ?? 'after_service',
+            'payment_status' => 'pending',
         ]);
 
         $total = 0;

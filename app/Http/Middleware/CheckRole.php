@@ -17,7 +17,10 @@ class CheckRole
     public function handle(Request $request, Closure $next, string $role): Response
     {
         if (!Auth::check() || Auth::user()->role !== $role) {
-            return response()->json(['message' => 'Accès interdit. Rôle requis : ' . $role], 403);
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Accès interdit. Rôle requis : ' . $role], 403);
+            }
+            return redirect('/dashboard')->with('error', 'Vous n\'avez pas les permissions nécessaires.');
         }
 
         return $next($request);

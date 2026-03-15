@@ -6,7 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
 {
-    protected $fillable = ['name', 'address', 'phone', 'logo', 'banner', 'is_active'];
+    protected $fillable = ['name', 'address', 'phone', 'logo', 'banner', 'qr_code', 'is_active'];
+
+    protected $appends = ['logo_url', 'banner_url', 'qr_code_url'];
+
+    public function getLogoUrlAttribute()
+    {
+        return $this->logo ? asset('storage/' . $this->logo) : null;
+    }
+
+    public function getBannerUrlAttribute()
+    {
+        return $this->banner ? asset('storage/' . $this->banner) : null;
+    }
+
+    public function getQrCodeUrlAttribute()
+    {
+        return $this->qr_code ? asset('storage/' . $this->qr_code) : null;
+    }
 
     public function users()
     {

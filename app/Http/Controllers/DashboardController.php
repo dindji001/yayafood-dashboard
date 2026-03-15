@@ -22,11 +22,12 @@ class DashboardController extends Controller
                 'total_revenue' => Order::where('status', 'closed')->sum('total_amount'),
             ];
             $restaurants = Restaurant::withCount('orders')->get();
-            return view('dashboard.super_admin', compact('stats', 'restaurants'));
+            $users = User::where('role', '!=', 'super_admin')->with('restaurant')->get();
+            return view('dashboard.super_admin', compact('stats', 'restaurants', 'users'));
         }
 
         if ($user->role === 'restaurant') {
-            $restaurant = Restaurant::withCount('orders')->findOrFail($user->restaurant_id);
+            $restaurant = Restaurant::with(['categories.dishes', 'orders.items.dish', 'reviews.user'])->withCount('orders')->findOrFail($user->restaurant_id);
             $stats = [
                 'orders_today' => Order::where('restaurant_id', $user->restaurant_id)
                     ->whereDate('created_at', now()->today())
@@ -39,7 +40,8 @@ class DashboardController extends Controller
             ];
             $liveOrders = Order::where('restaurant_id', $user->restaurant_id)
                 ->whereIn('status', ['pending', 'preparing', 'ready'])
-                ->with('items.dish')
+                ->with(['items.dish', 'user'])
+                ->orderBy('created_at', 'desc')
                 ->get();
             $reviews = $restaurant->reviews()->with('user')->orderBy('created_at', 'desc')->get();
             return view('dashboard.restaurant', compact('stats', 'restaurant', 'liveOrders', 'reviews'));

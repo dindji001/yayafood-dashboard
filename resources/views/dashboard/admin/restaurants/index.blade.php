@@ -16,12 +16,12 @@
     <!-- Sidebar (Reprise du design existant) -->
     <aside class="w-72 bg-white border-r border-gray-100 flex flex-col fixed h-full">
         <div class="p-8">
-            <h1 class="text-2xl font-extrabold tracking-tighter flex items-center gap-2 text-[#2C3E3F]">
+            <a href="{{ route('dashboard') }}" class="text-2xl font-extrabold tracking-tighter flex items-center gap-2 text-[#2C3E3F]">
                 <div class="w-10 h-10 bg-[#2C3E3F] rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="utensils-crosses" class="w-6 h-6"></i>
                 </div>
                 YayaFood<span class="text-orange-500">.</span>
-            </h1>
+            </a>
         </div>
         <nav class="flex-1 px-4 space-y-2 mt-4">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
@@ -31,6 +31,10 @@
             <a href="{{ route('admin.restaurants.index') }}" class="bg-[#2C3E3F]/10 text-[#2C3E3F] border-r-4 border-[#2C3E3F] flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
                 <i data-lucide="store" class="w-5 h-5"></i>
                 Liste des Restaurants
+            </a>
+            <a href="{{ route('dashboard') }}#users" class="flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                Utilisateurs
             </a>
         </nav>
     </aside>

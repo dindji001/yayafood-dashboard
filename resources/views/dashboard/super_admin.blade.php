@@ -20,30 +20,26 @@
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-gray-100 flex flex-col fixed h-full">
         <div class="p-8">
-            <h1 class="text-2xl font-extrabold tracking-tighter flex items-center gap-2 text-[#2C3E3F]">
+            <a href="{{ route('dashboard') }}" class="text-2xl font-extrabold tracking-tighter flex items-center gap-2 text-[#2C3E3F]">
                 <div class="w-10 h-10 bg-[#2C3E3F] rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="utensils-crosses" class="w-6 h-6"></i>
                 </div>
                 YayaFood<span class="text-orange-500">.</span>
-            </h1>
+            </a>
         </div>
         
         <nav class="flex-1 px-4 space-y-2 mt-4">
-            <a href="#dashboard" class="sidebar-link active flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
+            <a href="{{ route('dashboard') }}" class="sidebar-link active flex items-center gap-3 p-4 rounded-2xl font-bold transition-all">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 Tableau de bord
             </a>
-            <a href="#restaurants" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+            <a href="{{ route('admin.restaurants.index') }}" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="store" class="w-5 h-5"></i>
-                Restaurants
+                Liste des Restaurants
             </a>
-            <a href="#users" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+            <a href="{{ route('dashboard') }}#users" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="users" class="w-5 h-5"></i>
                 Utilisateurs
-            </a>
-            <a href="#" class="sidebar-link flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
-                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                Rapports Financiers
             </a>
         </nav>
 
@@ -260,10 +256,13 @@
                                             </form>
                                         </td>
                                         <td class="px-8 py-6 text-right">
-                                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <a href="{{ route('admin.restaurants.show', $r->id) }}" class="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Détails & Statistiques">
+                                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                                </a>
                                                 <form action="{{ route('admin.restaurants.delete', $r->id) }}" method="POST">
                                                     @csrf @method('DELETE')
-                                                    <button type="submit" onclick="return confirm('Attention : suppression irréversible !')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                                                    <button type="submit" onclick="return confirm('Attention : suppression irréversible !')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Supprimer">
                                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                                     </button>
                                                 </form>

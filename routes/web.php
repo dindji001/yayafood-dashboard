@@ -29,6 +29,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/admin/restaurants/{id}', [AdminController::class, 'updateRestaurant'])->name('admin.restaurants.update');
         Route::delete('/admin/restaurants/{id}', [AdminController::class, 'deleteRestaurant'])->name('admin.restaurants.delete');
         Route::post('/admin/restaurants/{id}/toggle', [AdminController::class, 'toggleRestaurantStatus'])->name('admin.restaurants.toggle');
+
+        // Demandes de suppression
+        Route::get('/admin/deletion-requests', [AdminController::class, 'deletionRequests'])->name('admin.deletion-requests.index');
+        Route::post('/admin/deletion-requests/{id}/process', [AdminController::class, 'processDeletionRequest'])->name('admin.deletion-requests.process');
         
         Route::post('/admin/users', [AdminController::class, 'createRestaurantUser'])->name('admin.users.create');
         Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
@@ -42,7 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/restaurant/settings', [RestaurantManagerController::class, 'settings'])->name('restaurant.settings.index');
 
         Route::post('/restaurant/settings/update', [RestaurantManagerController::class, 'updateInfo'])->name('restaurant.info.update');
-        Route::post('/restaurant/settings/toggle', [RestaurantManagerController::class, 'toggleSettings'])->name('restaurant.settings.toggle');
+    Route::post('/restaurant/settings/delete-request', [RestaurantManagerController::class, 'requestDeletion'])->name('restaurant.settings.delete-request');
+    Route::post('/restaurant/settings/toggle', [RestaurantManagerController::class, 'toggleSettings'])->name('restaurant.settings.toggle');
         Route::post('/restaurant/qrcode/regenerate', [RestaurantManagerController::class, 'regenerateQrCode'])->name('restaurant.qrcode.regenerate');
 
         // Catégories & Plats

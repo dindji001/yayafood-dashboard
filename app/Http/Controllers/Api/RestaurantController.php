@@ -10,7 +10,10 @@ class RestaurantController extends Controller
 {
     public function index()
     {
-        return response()->json(Restaurant::where('is_active', true)->get());
+        $restaurants = Restaurant::where('is_active', true)
+            ->withCount(['reviews'])
+            ->get();
+        return response()->json($restaurants);
     }
 
     public function show($id)

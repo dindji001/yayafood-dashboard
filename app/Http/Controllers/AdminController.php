@@ -228,4 +228,33 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Utilisateur supprimé.');
     }
+
+    public function deletionRequests()
+    {
+        $requests = \App\Models\AccountDeletionRequest::with('user.restaurant')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        return view('dashboard.admin.deletion_requests.index', compact('requests'));
+    }
+
+    public function processDeletionRequest(Request $request, $id)
+    {
+        $deletionRequest = \App\Models\AccountDeletionRequest::findOrFail($id);
+        $user = $deletionRequest->user;
+
+        if ($request->action === 'approve') {
+            // Si c'est un restaurant, on peut vouloir supprimer le restaurant aussi
+            if ($user->role === 'restaurant' && $user->restaurant_id) {
+                $user->restaurant->delete();
+            }
+            $user->delete();
+            $deletionRequest->update(['status' => 'processed', 'processed_at' => now()]);
+            return redirect()->back()->with('success', 'Compte supprimé avec succès.');
+        } else {
+            $deletionRequest->update(['status' => 'cancelled', 'processed_at' => now()]);
+            return redirect()->back()->with('success', 'Demande de suppression rejetée.');
+        }
+    }
 }

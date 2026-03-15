@@ -69,7 +69,90 @@
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-12">
-            <!-- Services Toggles -->
+            <!-- Restaurant Profile Information -->
+            <div class="space-y-8">
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 flex items-center gap-3">
+                        <i data-lucide="user" class="w-6 h-6 text-[#2C3E3F]"></i>
+                        Profil du Restaurant
+                    </h3>
+
+                    <form action="{{ route('restaurant.info.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Nom commercial</label>
+                            <input type="text" name="name" value="{{ $restaurant->name }}" required class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Description</label>
+                            <textarea name="description" rows="3" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none" placeholder="Décrivez votre restaurant...">{{ $restaurant->description }}</textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Adresse</label>
+                                <input type="text" name="address" value="{{ $restaurant->address }}" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Téléphone</label>
+                                <input type="text" name="phone" value="{{ $restaurant->phone }}" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-[#2C3E3F]/10 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Logo</label>
+                                <div class="relative group h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-[#2C3E3F]">
+                                    @if($restaurant->logo)
+                                        <img src="{{ $restaurant->logo_url }}" class="w-full h-full object-cover">
+                                    @else
+                                        <i data-lucide="image" class="w-6 h-6 text-gray-300 mb-1"></i>
+                                        <span class="text-[8px] font-bold text-gray-400 uppercase">Logo</span>
+                                    @endif
+                                    <input type="file" name="logo" class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Bannière</label>
+                                <div class="relative group h-32 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden transition-all hover:border-[#2C3E3F]">
+                                    @if($restaurant->banner)
+                                        <img src="{{ $restaurant->banner_url }}" class="w-full h-full object-cover">
+                                    @else
+                                        <i data-lucide="layout-template" class="w-6 h-6 text-gray-300 mb-1"></i>
+                                        <span class="text-[8px] font-bold text-gray-400 uppercase">Image Fond</span>
+                                    @endif
+                                    <input type="file" name="banner" class="absolute inset-0 opacity-0 cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#2C3E3F] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#1A2829] transition-all shadow-lg shadow-[#2C3E3F]/20">
+                            Enregistrer les modifications
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Account Deletion -->
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-red-100 bg-red-50/30">
+                    <h3 class="text-xl font-extrabold text-red-600 mb-4 flex items-center gap-3">
+                        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                        Zone de Danger
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-6 leading-relaxed font-medium">
+                        Si vous souhaitez cesser votre activité sur YayaFood, vous pouvez envoyer une demande de suppression de compte au Super Admin. Cette action est irréversible.
+                    </p>
+                    <form action="{{ route('restaurant.settings.delete-request') }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <textarea name="reason" placeholder="Raison de la suppression (facultatif)..." rows="2" class="w-full bg-white border border-red-100 rounded-2xl px-6 py-4 text-sm font-medium text-gray-600 focus:ring-2 focus:ring-red-500/10 outline-none"></textarea>
+                        </div>
+                        <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir envoyer une demande de suppression ?')" class="w-full bg-red-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-red-500/20">
+                            Demander la suppression
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Services Toggles & QR -->
             <div class="space-y-8">
                 <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
                     <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 flex items-center gap-3">

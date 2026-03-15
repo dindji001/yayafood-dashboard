@@ -92,9 +92,8 @@ class RestaurantManagerController extends Controller
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'logo' => 'nullable|image|max:2048',
-            'banner' => 'nullable|image|max:2048',
-            'qr_code' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         $data = $request->except(['logo', 'banner', 'qr_code']);
@@ -107,13 +106,25 @@ class RestaurantManagerController extends Controller
             $data['banner'] = $request->file('banner')->store('restaurants/banners', 'public');
         }
 
-        if ($request->hasFile('qr_code')) {
-            $data['qr_code'] = $request->file('qr_code')->store('restaurants/qrcodes', 'public');
-        }
-
         $restaurant->update($data);
 
         return redirect()->back()->with('success', 'Informations du restaurant mises à jour.');
+    }
+
+    public function requestDeletion(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        \App\Models\AccountDeletionRequest::updateOrCreate(
+            ['user_id' => $user->id, 'status' => 'pending'],
+            ['reason' => $request->reason]
+        );
+
+        return redirect()->back()->with('success', 'Votre demande de suppression de compte a été envoyée au Super Admin.');
     }
 
     public function regenerateQrCode()

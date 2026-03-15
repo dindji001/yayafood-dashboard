@@ -39,6 +39,10 @@
                 <i data-lucide="store" class="w-5 h-5"></i>
                 Restaurants
             </a>
+            <a href="{{ route('admin.deletion-requests.index') }}" class="sidebar-link {{ request()->routeIs('admin.deletion-requests.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
+                <i data-lucide="user-x" class="w-5 h-5"></i>
+                Demandes Suppression
+            </a>
             <a href="{{ route('admin.orders.index') }}" class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }} flex items-center gap-3 p-4 rounded-2xl font-semibold text-gray-500 hover:bg-gray-50 transition-all">
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                 Commandes

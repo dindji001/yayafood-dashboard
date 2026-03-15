@@ -11,12 +11,16 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #0F172A; }
         .sidebar-link.active { background-color: rgba(44, 62, 63, 0.1); color: #2C3E3F; border-right: 4px solid #2C3E3F; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(241, 245, 249, 1); }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(241, 245, 249, 1); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
         .btn-primary { background-color: #2C3E3F; transition: all 0.3s ease; }
         .btn-primary:hover { background-color: #1A2829; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(44, 62, 63, 0.2); }
         .order-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .order-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-        .chart-container { position: relative; height: 300px; width: 100%; }
+        .chart-container { position: relative; height: 350px; width: 100%; }
+        .stat-icon { position: absolute; right: -10px; bottom: -10px; opacity: 0.05; transform: rotate(-15deg); transition: all 0.5s ease; }
+        .glass-card:hover .stat-icon { transform: rotate(0deg) scale(1.1); opacity: 0.08; }
+        .quick-action-card { transition: all 0.3s ease; border: 1px solid transparent; }
+        .quick-action-card:hover { border-color: currentColor; transform: translateY(-3px); }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -114,71 +118,77 @@
 
         <!-- Stats Grid -->
         <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group hover:shadow-xl transition-all">
-                <div class="absolute -right-6 -bottom-6 text-[#2C3E3F]/5 group-hover:scale-110 transition-transform duration-500">
-                    <i data-lucide="shopping-cart" class="w-32 h-32"></i>
+            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group">
+                <i data-lucide="shopping-cart" class="w-32 h-32 text-orange-500 stat-icon"></i>
+                <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <i data-lucide="shopping-cart" class="w-7 h-7"></i>
                 </div>
-                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-                </div>
-                <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Ventes du jour</p>
+                <p class="text-gray-400 font-bold text-[10px] tracking-[0.2em] uppercase mb-2">Ventes du jour</p>
                 <div class="flex items-baseline gap-2">
-                    <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ $stats['orders_today'] }}</h3>
-                    <span class="text-xs font-bold text-gray-300">commandes</span>
+                    <h3 class="text-4xl font-black text-[#2C3E3F] tracking-tight">{{ $stats['orders_today'] }}</h3>
+                    <span class="text-xs font-bold text-orange-500 flex items-center gap-1">
+                        <i data-lucide="trending-up" class="w-3 h-3"></i>
+                        Aujourd'hui
+                    </span>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group hover:shadow-xl transition-all">
-                <div class="absolute -right-6 -bottom-6 text-[#2C3E3F]/5 group-hover:scale-110 transition-transform duration-500">
-                    <i data-lucide="banknote" class="w-32 h-32"></i>
+
+            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group">
+                <i data-lucide="banknote" class="w-32 h-32 text-green-500 stat-icon"></i>
+                <div class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <i data-lucide="banknote" class="w-7 h-7"></i>
                 </div>
-                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i data-lucide="banknote" class="w-6 h-6"></i>
-                </div>
-                <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Recettes Jour</p>
+                <p class="text-gray-400 font-bold text-[10px] tracking-[0.2em] uppercase mb-2">Recettes Jour</p>
                 <div class="flex items-baseline gap-2">
-                    <h3 class="text-3xl font-extrabold text-[#2C3E3F]">{{ number_format($stats['revenue_today'], 0, ',', ' ') }}</h3>
-                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">CFA</span>
+                    <h3 class="text-3xl font-black text-[#2C3E3F] tracking-tight">{{ number_format($stats['revenue_today'], 0, ',', ' ') }}</h3>
+                    <span class="text-[10px] font-black text-gray-400 uppercase">CFA</span>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group hover:shadow-xl transition-all">
-                <div class="absolute -right-6 -bottom-6 text-[#2C3E3F]/5 group-hover:scale-110 transition-transform duration-500">
-                    <i data-lucide="star" class="w-32 h-32"></i>
+
+            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group">
+                <i data-lucide="star" class="w-32 h-32 text-amber-500 stat-icon"></i>
+                <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <i data-lucide="star" class="w-7 h-7"></i>
                 </div>
-                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i data-lucide="star" class="w-6 h-6"></i>
-                </div>
-                <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Réputation</p>
-                <div class="flex items-baseline gap-2">
-                    <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ number_format($stats['average_rating'], 1) }}</h3>
+                <p class="text-gray-400 font-bold text-[10px] tracking-[0.2em] uppercase mb-2">Note Moyenne</p>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-4xl font-black text-[#2C3E3F] tracking-tight">{{ number_format($stats['average_rating'], 1) }}</h3>
                     <div class="flex text-amber-400">
-                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        @for($i=0; $i<5; $i++)
+                            <i data-lucide="star" class="w-4 h-4 {{ $i < floor($stats['average_rating']) ? 'fill-current' : 'text-gray-200' }}"></i>
+                        @endfor
                     </div>
                 </div>
             </div>
-            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group hover:shadow-xl transition-all">
-                <div class="absolute -right-6 -bottom-6 text-[#2C3E3F]/5 group-hover:scale-110 transition-transform duration-500">
-                    <i data-lucide="package" class="w-32 h-32"></i>
+
+            <div class="glass-card p-8 rounded-[2.5rem] relative overflow-hidden group">
+                <i data-lucide="package" class="w-32 h-32 text-blue-500 stat-icon"></i>
+                <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                    <i data-lucide="package" class="w-7 h-7"></i>
                 </div>
-                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i data-lucide="package" class="w-6 h-6"></i>
-                </div>
-                <p class="text-gray-400 font-bold text-xs tracking-widest uppercase mb-2">Total Ventes</p>
-                <h3 class="text-4xl font-extrabold text-[#2C3E3F]">{{ $stats['total_orders'] }}</h3>
+                <p class="text-gray-400 font-bold text-[10px] tracking-[0.2em] uppercase mb-2">Commandes Totales</p>
+                <h3 class="text-4xl font-black text-[#2C3E3F] tracking-tight">{{ $stats['total_orders'] }}</h3>
             </div>
         </div>
 
         <!-- Charts and Top Dishes -->
         <div class="grid grid-cols-12 gap-10 mb-12">
             <!-- Revenue Chart -->
-            <div class="col-span-12 lg:col-span-8 glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
-                <div class="flex justify-between items-center mb-8">
+            <div class="col-span-12 lg:col-span-8 glass-card rounded-[3rem] p-10 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-10">
                     <div>
-                        <h3 class="text-xl font-extrabold text-[#2C3E3F]">Performance Commerciale</h3>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-widest">Revenus des 7 derniers jours</p>
+                        <h3 class="text-2xl font-black text-[#2C3E3F] tracking-tight mb-1 uppercase">Analytique Revenus</h3>
+                        <p class="text-sm font-medium text-gray-400 uppercase tracking-[0.1em]">Performance des 7 derniers jours</p>
                     </div>
-                    <div class="flex gap-2">
-                        <span class="w-3 h-3 bg-[#2C3E3F] rounded-full"></span>
-                        <span class="text-[10px] font-bold text-[#2C3E3F] uppercase tracking-widest">Recettes (CFA)</span>
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 bg-[#2C3E3F] rounded-full"></span>
+                            <span class="text-[10px] font-black text-[#2C3E3F] uppercase tracking-widest">Recettes</span>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Période: </span>
+                            <span class="text-xs font-black text-[#2C3E3F]">{{ number_format($revenueChart->sum('revenue'), 0, ',', ' ') }} CFA</span>
+                        </div>
                     </div>
                 </div>
                 <div class="chart-container">
@@ -187,31 +197,47 @@
             </div>
 
             <!-- Top Dishes -->
-            <div class="col-span-12 lg:col-span-4 glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100">
-                <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-8 uppercase tracking-tighter">Top 5 des Plats</h3>
-                <div class="space-y-6">
-                    @forelse($topDishes as $item)
-                        <div class="flex items-center gap-4 group">
-                            <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black border border-gray-100 group-hover:bg-[#2C3E3F] group-hover:text-white transition-all">
-                                {{ substr($item->dish->name, 0, 1) }}
+            <div class="col-span-12 lg:col-span-4 glass-card rounded-[3rem] p-10 shadow-sm border border-gray-100 flex flex-col">
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-[#2C3E3F] uppercase tracking-tight">Best-Sellers</h3>
+                </div>
+                
+                <div class="space-y-6 flex-1">
+                    @forelse($topDishes as $index => $item)
+                        <div class="flex items-center gap-4 group p-4 rounded-[1.5rem] hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100">
+                            <div class="relative">
+                                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-xl shadow-sm border border-gray-100 group-hover:scale-110 transition-all">
+                                    {{ substr($item->dish->name, 0, 1) }}
+                                </div>
+                                <span class="absolute -top-2 -left-2 w-6 h-6 bg-[#2C3E3F] text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                                    #{{ $index + 1 }}
+                                </span>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $item->dish->name }}</p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ $item->total }} ventes ce mois</p>
+                                <p class="text-sm font-black text-[#2C3E3F] mb-0.5 group-hover:text-orange-500 transition-colors">{{ $item->dish->name }}</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ $item->total }} ventes</span>
+                                    <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                    <span class="text-[10px] text-orange-500 font-black">{{ number_format($item->dish->price, 0) }} CFA</span>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="text-xs font-black text-orange-500">{{ number_format($item->dish->price, 0) }}</p>
+                            <div class="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                                <i data-lucide="trending-up" class="w-4 h-4"></i>
                             </div>
                         </div>
                     @empty
-                        <div class="py-10 text-center opacity-40 italic">
-                            <i data-lucide="utensils" class="w-8 h-8 mx-auto mb-2"></i>
-                            <p class="text-xs font-bold uppercase tracking-widest">Aucune vente</p>
+                        <div class="flex-1 flex flex-col items-center justify-center opacity-40 grayscale">
+                            <i data-lucide="utensils-crosses" class="w-16 h-16 mb-4"></i>
+                            <p class="text-xs font-black uppercase tracking-widest">Aucune donnée</p>
                         </div>
                     @endforelse
                 </div>
-                <a href="{{ route('restaurant.menu.index') }}" class="w-full mt-8 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gray-50 text-[#2C3E3F] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100 transition-all border border-gray-100">
-                    Gérer le menu <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                
+                <a href="{{ route('restaurant.menu.index') }}" class="w-full mt-8 py-4 rounded-2xl bg-gray-50 text-[#2C3E3F] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-[#2C3E3F] hover:text-white transition-all text-center border border-gray-100">
+                    Catalogue Complet
                 </a>
             </div>
         </div>
@@ -219,43 +245,65 @@
         <div class="grid grid-cols-12 gap-10">
             <!-- Recent Live Orders -->
             <div class="col-span-12 lg:col-span-7">
-                <div class="glass-card rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                <div class="glass-card rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden">
                     <div class="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
                         <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                            <h3 class="text-xl font-extrabold text-[#2C3E3F] uppercase tracking-tighter">Commandes en Direct</h3>
+                            <div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
+                            <h3 class="text-xl font-black text-[#2C3E3F] uppercase tracking-tight">Commandes en Direct</h3>
                         </div>
                         <a href="{{ route('restaurant.orders.index') }}" class="text-[10px] font-black text-orange-500 uppercase tracking-widest hover:underline flex items-center gap-2">
                             Voir tout <i data-lucide="arrow-right" class="w-3 h-3"></i>
                         </a>
                     </div>
-                    <div class="p-6 space-y-4">
-                        @forelse($liveOrders->take(3) as $order)
-                            <div class="p-6 bg-white border border-gray-100 rounded-3xl flex items-center justify-between group hover:border-orange-200 transition-all shadow-sm">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-orange-50 rounded-2xl flex flex-col items-center justify-center">
-                                        <span class="text-[8px] font-black text-orange-400 uppercase">Table</span>
-                                        <span class="text-lg font-black text-orange-600 leading-none">{{ $order->table_number ?: '?' }}</span>
+                    <div class="p-8 space-y-6">
+                        @forelse($liveOrders->take(4) as $order)
+                            <div class="p-6 bg-white border border-gray-100 rounded-[2rem] flex items-center justify-between group hover:border-orange-200 hover:shadow-xl hover:shadow-orange-500/5 transition-all">
+                                <div class="flex items-center gap-5">
+                                    <div class="w-16 h-16 bg-orange-50 rounded-2xl flex flex-col items-center justify-center border border-orange-100 group-hover:bg-orange-500 group-hover:border-orange-500 transition-all duration-500">
+                                        <span class="text-[8px] font-black text-orange-400 uppercase group-hover:text-white/70 transition-colors">Table</span>
+                                        <span class="text-2xl font-black text-orange-600 leading-none group-hover:text-white transition-colors">{{ $order->table_number ?: '?' }}</span>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-extrabold text-[#2C3E3F]">{{ $order->user->name }}</p>
-                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ count($order->items) }} articles • {{ $order->created_at->diffForHumans() }}</p>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <p class="text-sm font-black text-[#2C3E3F]">{{ $order->user->name }}</p>
+                                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ $order->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex -space-x-2">
+                                                @foreach($order->items->take(3) as $item)
+                                                    <div class="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[8px] font-black text-[#2C3E3F]" title="{{ $item->dish->name }}">
+                                                        {{ substr($item->dish->name, 0, 1) }}
+                                                    </div>
+                                                @endforeach
+                                                @if(count($order->items) > 3)
+                                                    <div class="w-6 h-6 rounded-full bg-[#2C3E3F] border-2 border-white flex items-center justify-center text-[8px] font-black text-white">
+                                                        +{{ count($order->items) - 3 }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ count($order->items) }} article(s)</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-6">
+                                <div class="flex items-center gap-8">
                                     <div class="text-right">
-                                        <p class="text-sm font-black text-[#2C3E3F]">{{ number_format($order->total_amount, 0) }} CFA</p>
-                                        <span class="text-[8px] font-black px-2 py-0.5 rounded bg-orange-100 text-orange-600 uppercase tracking-widest">{{ $order->status }}</span>
+                                        <p class="text-lg font-black text-[#2C3E3F]">{{ number_format($order->total_amount, 0) }} <span class="text-[10px] text-gray-400">CFA</span></p>
+                                        <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.15em] {{ $order->status === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600' }}">
+                                            {{ $order->status }}
+                                        </span>
                                     </div>
-                                    <a href="{{ route('restaurant.orders.index') }}" class="p-3 bg-gray-50 text-gray-400 rounded-xl group-hover:bg-[#2C3E3F] group-hover:text-white transition-all">
-                                        <i data-lucide="play" class="w-4 h-4"></i>
+                                    <a href="{{ route('restaurant.orders.index') }}" class="w-12 h-12 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-[#2C3E3F] hover:text-white hover:rotate-12 transition-all">
+                                        <i data-lucide="play" class="w-5 h-5"></i>
                                     </a>
                                 </div>
                             </div>
                         @empty
-                            <div class="py-12 text-center opacity-40">
-                                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3"></i>
-                                <p class="text-xs font-bold uppercase tracking-[0.2em]">Pas de commande active</p>
+                            <div class="py-20 text-center bg-gray-50/50 rounded-[2.5rem] border border-dashed border-gray-200">
+                                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                                    <i data-lucide="inbox" class="w-10 h-10 text-gray-200"></i>
+                                </div>
+                                <p class="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Aucune commande active</p>
                             </div>
                         @endforelse
                     </div>
@@ -263,44 +311,61 @@
             </div>
 
             <!-- Recent Reviews -->
-            <div class="col-span-12 lg:col-span-5">
-                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border border-gray-100 h-full">
-                    <div class="flex justify-between items-center mb-8">
-                        <h3 class="text-xl font-extrabold text-[#2C3E3F] uppercase tracking-tighter">Derniers Avis</h3>
+            <div class="col-span-12 lg:col-span-5 flex flex-col gap-10">
+                <div class="glass-card rounded-[3rem] p-10 shadow-sm border border-gray-100 flex-1">
+                    <div class="flex justify-between items-center mb-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                                <i data-lucide="message-circle" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-xl font-black text-[#2C3E3F] uppercase tracking-tight">Retours Clients</h3>
+                        </div>
                         <a href="{{ route('restaurant.reviews.index') }}" class="text-[10px] font-black text-blue-500 uppercase tracking-widest hover:underline">Voir tout</a>
                     </div>
+                    
                     <div class="space-y-8">
                         @forelse($reviews->take(3) as $review)
-                            <div class="relative pl-4 border-l-2 border-gray-100 hover:border-blue-400 transition-all">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <p class="text-xs font-black text-[#2C3E3F]">{{ $review->user->name }}</p>
-                                        <div class="flex text-amber-400">
-                                            @for($i=0; $i<$review->rating; $i++) <i data-lucide="star" class="w-2 h-2 fill-current"></i> @endfor
+                            <div class="relative group">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ $review->user->name }}" class="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 group-hover:scale-110 transition-transform">
+                                        <div>
+                                            <p class="text-sm font-black text-[#2C3E3F]">{{ $review->user->name }}</p>
+                                            <div class="flex text-amber-400 gap-0.5">
+                                                @for($i=0; $i<5; $i++)
+                                                    <i data-lucide="star" class="w-2.5 h-2.5 {{ $i < $review->rating ? 'fill-current' : 'text-gray-200' }}"></i>
+                                                @endfor
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="text-[8px] font-bold text-gray-400 uppercase">{{ $review->created_at->diffForHumans() }}</span>
+                                    <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">{{ $review->created_at->diffForHumans() }}</span>
                                 </div>
-                                <p class="text-xs text-gray-500 italic line-clamp-2">"{{ $review->comment }}"</p>
+                                <div class="pl-13">
+                                    <p class="text-xs text-gray-500 italic leading-relaxed">"{{ $review->comment }}"</p>
+                                </div>
                             </div>
                         @empty
-                            <div class="py-10 text-center opacity-40">
-                                <p class="text-xs font-bold uppercase tracking-widest">Aucun avis reçu</p>
+                            <div class="py-10 text-center opacity-40 grayscale">
+                                <p class="text-xs font-black uppercase tracking-widest">Aucun avis reçu</p>
                             </div>
                         @endforelse
                     </div>
-                    
-                    <!-- Quick Actions -->
-                    <div class="mt-12 pt-8 border-t border-gray-50 grid grid-cols-2 gap-4">
-                        <a href="{{ route('restaurant.menu.index') }}" class="p-4 rounded-2xl bg-teal-50 text-teal-600 flex flex-col items-center justify-center gap-2 group hover:bg-teal-600 hover:text-white transition-all">
-                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Nouveau Plat</span>
-                        </a>
-                        <a href="{{ route('restaurant.settings.index') }}" class="p-4 rounded-2xl bg-gray-50 text-gray-500 flex flex-col items-center justify-center gap-2 group hover:bg-[#2C3E3F] hover:text-white transition-all">
-                            <i data-lucide="settings" class="w-5 h-5"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Réglages</span>
-                        </a>
-                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-2 gap-6">
+                    <a href="{{ route('restaurant.menu.index') }}" class="quick-action-card p-8 rounded-[2.5rem] bg-[#2C3E3F] text-white flex flex-col items-center justify-center gap-4 group">
+                        <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-orange-500 group-hover:scale-110 transition-all">
+                            <i data-lucide="plus-circle" class="w-8 h-8"></i>
+                        </div>
+                        <span class="text-xs font-black uppercase tracking-[0.2em] text-center">Nouveau Plat</span>
+                    </a>
+                    <a href="{{ route('restaurant.settings.index') }}" class="quick-action-card p-8 rounded-[2.5rem] bg-white border border-gray-100 text-[#2C3E3F] flex flex-col items-center justify-center gap-4 group shadow-sm">
+                        <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-[#2C3E3F] group-hover:text-white group-hover:scale-110 transition-all">
+                            <i data-lucide="settings" class="w-8 h-8"></i>
+                        </div>
+                        <span class="text-xs font-black uppercase tracking-[0.2em] text-center">Réglages</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -313,41 +378,53 @@
         const ctx = document.getElementById('revenueChart').getContext('2d');
         const revenueData = JSON.parse('{!! json_encode($revenueChart) !!}');
         
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(44, 62, 63, 0.15)');
+        gradient.addColorStop(1, 'rgba(44, 62, 63, 0)');
+        
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: revenueData.map(d => d.date),
+                labels: revenueData.map(d => {
+                    const date = new Date(d.date);
+                    return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
+                }),
                 datasets: [{
                     label: 'Revenus',
                     data: revenueData.map(d => d.revenue),
                     borderColor: '#2C3E3F',
-                    backgroundColor: 'rgba(44, 62, 63, 0.05)',
+                    backgroundColor: gradient,
                     borderWidth: 4,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#2C3E3F',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2C3E3F',
+                    pointBorderWidth: 3,
                     pointRadius: 6,
-                    pointHoverRadius: 8
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#2C3E3F',
+                    pointHoverBorderColor: '#fff',
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false,
                         backgroundColor: '#2C3E3F',
-                        titleFont: { family: 'Plus Jakarta Sans', weight: '800' },
-                        bodyFont: { family: 'Plus Jakarta Sans', weight: '600' },
-                        padding: 12,
-                        borderRadius: 12,
+                        titleFont: { family: 'Plus Jakarta Sans', weight: '800', size: 14 },
+                        bodyFont: { family: 'Plus Jakarta Sans', weight: '600', size: 13 },
+                        padding: 16,
+                        borderRadius: 15,
+                        displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                return context.parsed.y.toLocaleString() + ' CFA';
+                                return 'Recettes: ' + context.parsed.y.toLocaleString() + ' CFA';
                             }
                         }
                     }
@@ -355,14 +432,18 @@
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { font: { family: 'Plus Jakarta Sans', weight: '600', size: 10 } }
+                        ticks: { 
+                            font: { family: 'Plus Jakarta Sans', weight: '700', size: 11 },
+                            color: '#94A3B8'
+                        }
                     },
                     y: {
                         beginAtZero: true,
-                        grid: { borderDash: [5, 5], color: '#f1f5f9' },
+                        grid: { borderDash: [5, 5], color: '#F1F5F9', drawBorder: false },
                         ticks: { 
-                            font: { family: 'Plus Jakarta Sans', weight: '600', size: 10 },
-                            callback: function(value) { return value.toLocaleString(); }
+                            font: { family: 'Plus Jakarta Sans', weight: '700', size: 11 },
+                            color: '#94A3B8',
+                            callback: function(value) { return value.toLocaleString() + ' CFA'; }
                         }
                     }
                 }

@@ -6,12 +6,55 @@ use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
+use App\Models\OrderItem;
 
 class AdminController extends Controller
 {
+    public function users()
+    {
+        $users = User::where('role', 'client')
+            ->withCount(['orders', 'reviews'])
+            ->get();
+
+        return view('dashboard.admin.users.index', compact('users'));
+    }
+
+    public function userDetail($id)
+    {
+        $user = User::withCount(['orders', 'reviews'])
+            ->with(['orders.restaurant', 'reviews.restaurant'])
+            ->findOrFail($id);
+
+        // Plat le plus consommé par l'utilisateur
+        $favoriteDish = OrderItem::whereHas('order', function($q) use ($id) {
+                $q->where('user_id', $id);
+            })
+            ->select('dish_id', DB::raw('count(*) as total'))
+            ->groupBy('dish_id')
+            ->orderBy('total', 'desc')
+            ->with('dish')
+            ->first();
+
+        // Restaurant le plus visité
+        $favoriteRestaurant = Order::where('user_id', $id)
+            ->select('restaurant_id', DB::raw('count(*) as total'))
+            ->groupBy('restaurant_id')
+            ->orderBy('total', 'desc')
+            ->with('restaurant')
+            ->first();
+
+        // Statistiques globales de l'utilisateur
+        $userStats = [
+            'total_spent' => Order::where('user_id', $id)->where('status', 'served')->sum('total_amount'),
+            'avg_rating' => $user->reviews()->avg('rating') ?: 0,
+            'orders_cancelled' => Order::where('user_id', $id)->where('status', 'cancelled')->count(),
+        ];
+
+        return view('dashboard.admin.users.show', compact('user', 'favoriteDish', 'favoriteRestaurant', 'userStats'));
+    }
+
     public function restaurants()
     {
         $restaurants = Restaurant::withCount(['orders', 'reviews', 'categories'])

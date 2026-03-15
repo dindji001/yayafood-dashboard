@@ -16,6 +16,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes
     Route::middleware(CheckRole::class . ':super_admin')->group(function () {
+        Route::get('/admin/restaurants-list', [AdminController::class, 'restaurants'])->name('admin.restaurants.index');
+        Route::get('/admin/restaurants/{id}', [AdminController::class, 'restaurantDetail'])->name('admin.restaurants.show');
+        
         Route::post('/admin/restaurants', [AdminController::class, 'createRestaurant'])->name('admin.restaurants.create');
         Route::put('/admin/restaurants/{id}', [AdminController::class, 'updateRestaurant'])->name('admin.restaurants.update');
         Route::delete('/admin/restaurants/{id}', [AdminController::class, 'deleteRestaurant'])->name('admin.restaurants.delete');

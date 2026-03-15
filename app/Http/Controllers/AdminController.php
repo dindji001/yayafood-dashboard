@@ -7,8 +7,61 @@ use App\Models\Restaurant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+use App\Models\Order;
+use Illuminate\Support\Facades\DB;
+
 class AdminController extends Controller
 {
+    public function restaurants()
+    {
+        $restaurants = Restaurant::withCount(['orders', 'reviews', 'categories'])
+            ->with(['reviews' => function($q) {
+                $q->latest()->limit(5);
+            }])
+            ->get();
+
+        return view('dashboard.admin.restaurants.index', compact('restaurants'));
+    }
+
+    public function restaurantDetail($id)
+    {
+        $restaurant = Restaurant::withCount(['orders', 'reviews', 'categories'])
+            ->with(['categories.dishes', 'reviews.user', 'orders.user'])
+            ->findOrFail($id);
+
+        // Statistiques avancées des commandes
+        $orderStats = [
+            'paid' => Order::where('restaurant_id', $id)->where('status', 'served')->count(),
+            'cancelled' => Order::where('restaurant_id', $id)->where('status', 'cancelled')->count(),
+            'failed' => Order::where('restaurant_id', $id)->where('status', 'failed')->count(), // Supposons un état failed
+            'pending' => Order::where('restaurant_id', $id)->whereIn('status', ['pending', 'preparing', 'ready'])->count(),
+            'total_revenue' => Order::where('restaurant_id', $id)->where('status', 'served')->sum('total_amount'),
+        ];
+
+        // Nombre de plats disponibles vs total
+        $dishStats = [
+            'total' => DB::table('dishes')
+                ->join('categories', 'dishes.category_id', '=', 'categories.id')
+                ->where('categories.restaurant_id', $id)
+                ->count(),
+            'available' => DB::table('dishes')
+                ->join('categories', 'dishes.category_id', '=', 'categories.id')
+                ->where('categories.restaurant_id', $id)
+                ->where('dishes.is_available', true)
+                ->count(),
+        ];
+
+        // Visites par jour (Simulation via les commandes créées par jour si pas de table visits)
+        $visitsPerDay = Order::where('restaurant_id', $id)
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->limit(7)
+            ->get();
+
+        return view('dashboard.admin.restaurants.show', compact('restaurant', 'orderStats', 'dishStats', 'visitsPerDay'));
+    }
+
     public function createRestaurant(Request $request)
     {
         $request->validate([

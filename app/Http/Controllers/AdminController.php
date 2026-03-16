@@ -231,6 +231,14 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Statut du restaurant mis à jour.');
     }
 
+    public function toggleRestaurantFeatured($id)
+    {
+        $restaurant = Restaurant::findOrFail($id);
+        $restaurant->update(['is_featured' => !$restaurant->is_featured]);
+
+        return redirect()->back()->with('success', 'Mise à la une mise à jour.');
+    }
+
     public function createRestaurantUser(Request $request)
     {
         $request->validate([

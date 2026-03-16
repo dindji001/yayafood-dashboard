@@ -69,6 +69,10 @@
                 <p class="text-gray-400 font-medium italic">Gérez vos catégories et vos plats en temps réel.</p>
             </div>
             <div class="flex gap-4">
+                <button onclick="openModal('menuScheduleModal')" class="bg-blue-50 border border-blue-100 text-blue-600 px-8 py-4 rounded-[1.5rem] font-bold transition-all flex items-center gap-3 shadow-sm hover:bg-blue-100">
+                    <i data-lucide="calendar-days" class="w-5 h-5"></i>
+                    Programme Hebdo
+                </button>
                 <button onclick="openModal('createCategoryModal')" class="bg-white border border-gray-100 text-[#2C3E3F] px-8 py-4 rounded-[1.5rem] font-bold transition-all flex items-center gap-3 shadow-sm hover:shadow-md">
                     <i data-lucide="folder-plus" class="w-5 h-5"></i>
                     Catégorie
@@ -79,6 +83,21 @@
                 </button>
             </div>
         </header>
+
+        @if($restaurant->has_daily_menu)
+            <div class="mb-12 p-6 bg-blue-50 border border-blue-100 rounded-[2.5rem] flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
+                        <i data-lucide="info" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="font-black uppercase text-[10px] tracking-widest text-blue-600">Mode Programme Actif</p>
+                        <p class="text-sm font-bold text-blue-800">Vos clients voient vos menus spécifiques par jour de la semaine.</p>
+                    </div>
+                </div>
+                <button onclick="openModal('menuScheduleModal')" class="text-blue-600 font-black text-[10px] uppercase tracking-[0.2em] hover:underline">Modifier le programme</button>
+            </div>
+        @endif
 
         @if(session('success'))
             <div class="mb-8 p-6 bg-green-50 border border-green-100 rounded-[2rem] flex items-center gap-4 text-green-600 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -157,6 +176,85 @@
             </section>
         @endforeach
     </main>
+
+    <!-- Modal Menu Schedule -->
+    <div id="menuScheduleModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity" onclick="closeModal('menuScheduleModal')"></div>
+            <div class="relative bg-white rounded-[2.5rem] w-full max-w-4xl p-10 shadow-2xl border border-gray-100 overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-blue-500"></div>
+                
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-3xl font-black text-[#2C3E3F] uppercase tracking-tight">Programme Hebdomadaire</h3>
+                        <p class="text-gray-400 font-medium">Définissez vos plats spécifiques pour chaque jour de la semaine.</p>
+                    </div>
+                    <button onclick="closeModal('menuScheduleModal')" class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <form action="{{ route('restaurant.menu.schedule.update') }}" method="POST" class="space-y-8">
+                    @csrf
+                    
+                    <div class="flex items-center gap-4 p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="has_daily_menu" {{ $restaurant->has_daily_menu ? 'checked' : '' }} class="sr-only peer">
+                            <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-500"></div>
+                        </label>
+                        <div>
+                            <p class="font-black text-[#2C3E3F] text-xs uppercase tracking-widest">Activer le programme de menu</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Si actif, l'application affichera le menu du jour au client.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @php
+                            $days = [
+                                1 => 'Lundi', 2 => 'Mardi', 3 => 'Mercredi', 
+                                4 => 'Jeudi', 5 => 'Vendredi', 6 => 'Samedi', 0 => 'Dimanche'
+                            ];
+                            $schedules = $restaurant->menuSchedules->keyBy('day_of_week');
+                            $openingHours = $restaurant->openingHours->keyBy('day_of_week');
+                        @endphp
+
+                        @foreach($days as $num => $label)
+                            @php 
+                                $s = $schedules->get($num);
+                                $isOpen = $openingHours->has($num) && !$openingHours->get($num)->is_closed;
+                            @endphp
+                            <div class="p-6 rounded-3xl border {{ $isOpen ? 'bg-white border-gray-100 shadow-sm' : 'bg-red-50 border-red-100 opacity-75' }} transition-all">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-sm font-black text-[#2C3E3F] uppercase tracking-tighter">{{ $label }}</span>
+                                    @if(!$isOpen)
+                                        <span class="text-[8px] font-black bg-red-500 text-white px-3 py-1 rounded-full uppercase tracking-widest">Fermé</span>
+                                    @else
+                                        <span class="text-[8px] font-black bg-green-500 text-white px-3 py-1 rounded-full uppercase tracking-widest">Ouvert</span>
+                                    @endif
+                                </div>
+                                
+                                <input type="hidden" name="schedules[{{ $loop->index }}][day_of_week]" value="{{ $num }}">
+                                
+                                @if(!$isOpen)
+                                    <div class="h-24 flex flex-col items-center justify-center text-center gap-2">
+                                        <p class="text-[10px] font-bold text-red-400 uppercase leading-tight">Le restaurant est fermé ce jour.<br>Ouvrez-le dans la configuration pour ajouter un menu.</p>
+                                        <a href="{{ route('restaurant.settings.hours') }}" class="text-[9px] font-black text-red-600 underline uppercase tracking-widest">Gérer les horaires</a>
+                                    </div>
+                                    <input type="hidden" name="schedules[{{ $loop->index }}][menu_content]" value="">
+                                @else
+                                    <textarea name="schedules[{{ $loop->index }}][menu_content]" rows="3" 
+                                              class="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-blue-500/10 outline-none resize-none"
+                                              placeholder="Ex: Riz gras, Tchep, Salade de fruits...">{{ $s ? $s->menu_content : '' }}</textarea>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/20">Enregistrer le programme hebdomadaire</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Create Category -->
     <div id="createCategoryModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">

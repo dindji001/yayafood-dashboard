@@ -57,9 +57,42 @@ class RestaurantManagerController extends Controller
     public function menu()
     {
         $user = Auth::user();
-        $restaurant = Restaurant::with(['categories.dishes'])->findOrFail($user->restaurant_id);
-        
+        $restaurant = Restaurant::with(['categories.dishes', 'menuSchedules', 'openingHours'])->findOrFail($user->restaurant_id);
         return view('dashboard.restaurant.menu.index', compact('restaurant'));
+    }
+
+    public function updateMenuSchedule(Request $request)
+    {
+        $user = Auth::user();
+        $restaurantId = $user->restaurant_id;
+
+        $request->validate([
+            'has_daily_menu' => 'nullable',
+            'schedules' => 'required_if:has_daily_menu,on|array',
+            'schedules.*.day_of_week' => 'required|integer',
+            'schedules.*.menu_content' => 'nullable|string',
+        ]);
+
+        $restaurant = Restaurant::findOrFail($restaurantId);
+        $restaurant->update([
+            'has_daily_menu' => $request->has('has_daily_menu')
+        ]);
+
+        if ($request->has('has_daily_menu')) {
+            foreach ($request->schedules as $scheduleData) {
+                \App\Models\MenuSchedule::updateOrCreate(
+                    [
+                        'restaurant_id' => $restaurantId,
+                        'day_of_week' => $scheduleData['day_of_week'],
+                    ],
+                    [
+                        'menu_content' => $scheduleData['menu_content'] ?? '',
+                    ]
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Programme de menu mis à jour avec succès.');
     }
 
     public function reviews()

@@ -100,9 +100,17 @@
                                 {{ substr($r->name, 0, 1) }}
                             </div>
                         @endif
-                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
-                            {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
-                        </span>
+                        <div class="flex gap-2">
+                            <form action="{{ route('admin.restaurants.featured', $r->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center transition-all {{ $r->is_featured ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400 hover:bg-orange-100 hover:text-orange-500' }}" title="{{ $r->is_featured ? 'Retirer de la une' : 'Mettre à la une' }}">
+                                    <i data-lucide="star" class="w-4 h-4 {{ $r->is_featured ? 'fill-current' : '' }}"></i>
+                                </button>
+                            </form>
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
+                                {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
+                            </span>
+                        </div>
                     </div>
 
                     <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-2">{{ $r->name }}</h3>

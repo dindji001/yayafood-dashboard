@@ -8,13 +8,15 @@ class Restaurant extends Model
 {
     protected $fillable = [
         'name', 'description', 'address', 'phone', 'logo', 'banner', 'qr_code', 
-        'is_active', 'allow_pay_on_spot', 'allow_online_payment'
+        'is_active', 'is_featured', 'has_daily_menu', 'allow_pay_on_spot', 'allow_online_payment'
     ];
 
     protected $appends = ['logo_url', 'banner_url', 'qr_code_url', 'rating'];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'has_daily_menu' => 'boolean',
         'allow_pay_on_spot' => 'boolean',
         'allow_online_payment' => 'boolean',
     ];
@@ -94,5 +96,10 @@ class Restaurant extends Model
     public function openingHours()
     {
         return $this->hasMany(OpeningHour::class)->orderBy('day_of_week');
+    }
+
+    public function menuSchedules()
+    {
+        return $this->hasMany(MenuSchedule::class);
     }
 }

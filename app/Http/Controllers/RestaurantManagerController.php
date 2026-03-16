@@ -14,13 +14,42 @@ use Illuminate\Support\Facades\Validator;
 
 class RestaurantManagerController extends Controller
 {
-    public function orders()
+    public function orders(Request $request)
     {
         $user = Auth::user();
-        $orders = Order::where('restaurant_id', $user->restaurant_id)
-            ->with(['user', 'items.dish'])
-            ->latest()
-            ->paginate(15);
+        $query = Order::where('restaurant_id', $user->restaurant_id)
+            ->with(['user', 'items.dish']);
+
+        // Filtre par période
+        if ($request->has('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('created_at', now()->today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', now()->yesterday());
+                    break;
+                case 'week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->has('date')) {
+                        $query->whereDate('created_at', $request->date);
+                    }
+                    break;
+            }
+        }
+
+        // Filtre par heure (si aujourd'hui ou date spécifique)
+        if ($request->has('hour') && $request->hour !== '') {
+            $query->whereRaw('HOUR(created_at) = ?', [$request->hour]);
+        }
+
+        $orders = $query->latest()->paginate(15)->withQueryString();
         
         return view('dashboard.restaurant.orders.index', compact('orders'));
     }

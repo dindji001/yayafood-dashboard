@@ -69,6 +69,53 @@
             </div>
         </header>
 
+        <!-- FILTRES TEMPORELS -->
+        <div class="glass-card rounded-[2rem] p-6 mb-8 border border-gray-100 shadow-sm">
+            <form action="{{ route('restaurant.orders.index') }}" method="GET" class="flex flex-wrap items-center gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Période</label>
+                    <select name="period" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl px-4 py-2.5 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                        <option value="all" {{ request('period') == 'all' ? 'selected' : '' }}>Toutes les commandes</option>
+                        <option value="today" {{ request('period') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
+                        <option value="yesterday" {{ request('period') == 'yesterday' ? 'selected' : '' }}>Hier</option>
+                        <option value="week" {{ request('period') == 'week' ? 'selected' : '' }}>Cette semaine</option>
+                        <option value="month" {{ request('period') == 'month' ? 'selected' : '' }}>Ce mois-ci</option>
+                        <option value="custom" {{ request('period') == 'custom' ? 'selected' : '' }}>Date spécifique...</option>
+                    </select>
+                </div>
+
+                @if(request('period') == 'custom')
+                    <div class="flex flex-col gap-2 animate-in fade-in zoom-in duration-300">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Choisir une date</label>
+                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" 
+                               class="bg-gray-50 border-none rounded-xl px-4 py-2 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                    </div>
+                @endif
+
+                @if(request('period') == 'today' || request('period') == 'custom')
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Heure</label>
+                        <select name="hour" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl px-4 py-2.5 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                            <option value="">Toute la journée</option>
+                            @for($i = 0; $i < 24; $i++)
+                                <option value="{{ $i }}" {{ request('hour') !== null && request('hour') != '' && request('hour') == $i ? 'selected' : '' }}>
+                                    {{ sprintf('%02d', $i) }}:00 - {{ sprintf('%02d', $i) }}:59
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+                @endif
+
+                @if(request()->hasAny(['period', 'hour', 'date']))
+                    <div class="flex flex-col gap-2 mt-auto">
+                        <a href="{{ route('restaurant.orders.index') }}" class="text-[10px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-all flex items-center gap-1 py-3 px-2">
+                            <i data-lucide="x" class="w-3 h-3"></i> Effacer
+                        </a>
+                    </div>
+                @endif
+            </form>
+        </div>
+
         @if(session('success'))
             <div class="mb-8 p-6 bg-green-50 border border-green-100 rounded-[2rem] flex items-center gap-4 text-green-600 animate-in fade-in slide-in-from-top-4 duration-500">
                 <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">

@@ -13,11 +13,45 @@ use App\Models\OrderItem;
 
 class AdminController extends Controller
 {
-    public function allOrders()
+    public function allOrders(Request $request)
     {
-        $orders = Order::with(['user', 'restaurant', 'items.dish'])
-            ->latest()
-            ->paginate(15);
+        $query = Order::with(['user', 'restaurant', 'items.dish']);
+
+        // Filtre par période
+        if ($request->has('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('created_at', now()->today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', now()->yesterday());
+                    break;
+                case 'week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereMonth('created_at', now()->month)
+                          ->whereYear('created_at', now()->year);
+                    break;
+                case 'custom':
+                    if ($request->has('date')) {
+                        $query->whereDate('created_at', $request->date);
+                    }
+                    break;
+            }
+        }
+
+        // Filtre par heure
+        if ($request->has('hour') && $request->hour !== '') {
+            $query->whereRaw('HOUR(created_at) = ?', [$request->hour]);
+        }
+
+        // Filtre par restaurant (Admin uniquement)
+        if ($request->has('restaurant_id') && $request->restaurant_id !== '') {
+            $query->where('restaurant_id', $request->restaurant_id);
+        }
+
+        $orders = $query->latest()->paginate(15)->withQueryString();
         
         return view('dashboard.admin.orders.index', compact('orders'));
     }

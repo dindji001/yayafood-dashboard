@@ -57,6 +57,63 @@
             <p class="text-gray-400 font-medium italic">Vision globale de toutes les transactions de l'écosystème.</p>
         </header>
 
+        <!-- FILTRES TEMPORELS & RESTAURANTS -->
+        <div class="glass-card rounded-[2.5rem] p-8 mb-10 border border-gray-100 shadow-sm">
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="flex flex-wrap items-center gap-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Période</label>
+                    <select name="period" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                        <option value="all" {{ request('period') == 'all' ? 'selected' : '' }}>Toutes les périodes</option>
+                        <option value="today" {{ request('period') == 'today' ? 'selected' : '' }}>Aujourd'hui</option>
+                        <option value="yesterday" {{ request('period') == 'yesterday' ? 'selected' : '' }}>Hier</option>
+                        <option value="week" {{ request('period') == 'week' ? 'selected' : '' }}>Cette semaine</option>
+                        <option value="month" {{ request('period') == 'month' ? 'selected' : '' }}>Ce mois-ci</option>
+                        <option value="custom" {{ request('period') == 'custom' ? 'selected' : '' }}>Date spécifique...</option>
+                    </select>
+                </div>
+
+                @if(request('period') == 'custom')
+                    <div class="flex flex-col gap-2 animate-in fade-in zoom-in duration-300">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Choisir une date</label>
+                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" 
+                               class="bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                    </div>
+                @endif
+
+                @if(request('period') == 'today' || request('period') == 'custom')
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Heure</label>
+                        <select name="hour" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                            <option value="">Toute la journée</option>
+                            @for($i = 0; $i < 24; $i++)
+                                <option value="{{ $i }}" {{ request('hour') !== null && request('hour') != '' && request('hour') == $i ? 'selected' : '' }}>
+                                    {{ sprintf('%02d', $i) }}:00 - {{ sprintf('%02d', $i) }}:59
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
+                @endif
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Restaurant</label>
+                    <select name="restaurant_id" onchange="this.form.submit()" class="bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold text-[#2C3E3F] outline-none focus:ring-2 focus:ring-[#2C3E3F]/10">
+                        <option value="">Tous les établissements</option>
+                        @foreach(\App\Models\Restaurant::orderBy('name')->get() as $res)
+                            <option value="{{ $res->id }}" {{ request('restaurant_id') == $res->id ? 'selected' : '' }}>{{ $res->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                @if(request()->hasAny(['period', 'hour', 'date', 'restaurant_id']))
+                    <div class="flex flex-col gap-2 mt-auto">
+                        <a href="{{ route('admin.orders.index') }}" class="text-[10px] font-black text-red-400 uppercase tracking-widest hover:text-red-600 transition-all flex items-center gap-1 py-4 px-2">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i> Effacer
+                        </a>
+                    </div>
+                @endif
+            </form>
+        </div>
+
         <div class="glass-card rounded-[2.5rem] overflow-hidden shadow-sm border border-gray-100">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">

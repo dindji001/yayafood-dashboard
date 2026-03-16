@@ -11,13 +11,18 @@ class Restaurant extends Model
         'is_active', 'allow_pay_on_spot', 'allow_online_payment'
     ];
 
-    protected $appends = ['logo_url', 'banner_url', 'qr_code_url'];
+    protected $appends = ['logo_url', 'banner_url', 'qr_code_url', 'rating'];
 
     protected $casts = [
         'is_active' => 'boolean',
         'allow_pay_on_spot' => 'boolean',
         'allow_online_payment' => 'boolean',
     ];
+
+    public function getRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating') ?: 0, 1);
+    }
 
     public function getLogoUrlAttribute()
     {

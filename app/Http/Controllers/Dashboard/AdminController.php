@@ -12,13 +12,29 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function stats()
+    public function stats(Request $request)
     {
+        $query = Order::query();
+
+        if ($request->has('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('created_at', now()->today());
+                    break;
+                case 'week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'month':
+                    $query->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                    break;
+            }
+        }
+
         return response()->json([
             'restaurants_count' => Restaurant::count(),
             'users_count' => User::where('role', 'client')->count(),
-            'orders_count' => Order::count(),
-            'total_revenue' => Order::where('status', 'closed')->sum('total_amount'),
+            'orders_count' => $query->count(),
+            'total_revenue' => (clone $query)->where('status', 'closed')->sum('total_amount'),
         ]);
     }
 

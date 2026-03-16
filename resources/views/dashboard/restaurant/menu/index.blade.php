@@ -143,7 +143,7 @@
                                 </div>
                             @endif
 
-                            <div class="flex justify-between items-start mb-6">
+                            <div class="flex justify-between items-start mb-6 relative z-20">
                                 <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-xl border border-gray-100 overflow-hidden">
                                     @if($dish->image)
                                         <img src="{{ asset('storage/' . $dish->image) }}" alt="{{ $dish->name }}" class="w-full h-full object-cover">
@@ -164,10 +164,12 @@
                                 </div>
                             </div>
 
-                            <h4 class="text-xl font-extrabold text-[#2C3E3F] mb-2">{{ $dish->name }}</h4>
-                            <p class="text-xs text-gray-400 font-medium mb-6 line-clamp-2 h-8">{{ $dish->description ?: 'Aucune description' }}</p>
+                            <div class="relative z-20">
+                                <h4 class="text-xl font-extrabold text-[#2C3E3F] mb-2">{{ $dish->name }}</h4>
+                                <p class="text-xs text-gray-400 font-medium mb-6 line-clamp-2 h-8">{{ $dish->description ?: 'Aucune description' }}</p>
+                            </div>
 
-                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50 relative z-20">
                                 <span class="text-2xl font-black text-[#2C3E3F]">{{ number_format($dish->price, 0, ',', ' ') }} <span class="text-xs font-bold text-orange-500 uppercase">CFA</span></span>
                                 <form action="{{ route('restaurant.dishes.delete', $dish->id) }}" method="POST" onsubmit="return confirm('Supprimer ce plat ?')">
                                     @csrf @method('DELETE')

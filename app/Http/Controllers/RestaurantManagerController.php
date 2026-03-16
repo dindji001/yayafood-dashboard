@@ -84,6 +84,9 @@ class RestaurantManagerController extends Controller
                     [
                         'restaurant_id' => $restaurantId,
                         'day_of_week' => $scheduleData['day_of_week'],
+                    ],
+                    [
+                        'menu_content' => '', // Provision for legacy DB schema where this field is NOT NULL
                     ]
                 );
                 $schedule->dishes()->sync($scheduleData['dishes'] ?? []);

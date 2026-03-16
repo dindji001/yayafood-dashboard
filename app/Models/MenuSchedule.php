@@ -12,6 +12,7 @@ class MenuSchedule extends Model
     protected $fillable = [
         'restaurant_id',
         'day_of_week',
+        'menu_content', // Keep for compatibility with legacy DB schema
     ];
 
     public function dishes()

@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu_schedules', function (Blueprint $table) {
+        Schema::create('dish_menu_schedule', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
-            $table->tinyInteger('day_of_week'); // 0=Dimanche, 1=Lundi...
-
+            $table->foreignId('menu_schedule_id')->constrained()->onDelete('cascade');
+            $table->foreignId('dish_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            
-            $table->unique(['restaurant_id', 'day_of_week']);
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('menu_schedules');
+        Schema::dropIfExists('dish_menu_schedule_pivot');
     }
 };

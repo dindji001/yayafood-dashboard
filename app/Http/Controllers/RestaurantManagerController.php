@@ -70,7 +70,7 @@ class RestaurantManagerController extends Controller
             'has_daily_menu' => 'nullable',
             'schedules' => 'required_if:has_daily_menu,on|array',
             'schedules.*.day_of_week' => 'required|integer',
-            'schedules.*.menu_content' => 'nullable|string',
+            'schedules.*.dishes' => 'nullable|array',
         ]);
 
         $restaurant = Restaurant::findOrFail($restaurantId);
@@ -80,15 +80,13 @@ class RestaurantManagerController extends Controller
 
         if ($request->has('has_daily_menu')) {
             foreach ($request->schedules as $scheduleData) {
-                \App\Models\MenuSchedule::updateOrCreate(
+                $schedule = \App\Models\MenuSchedule::updateOrCreate(
                     [
                         'restaurant_id' => $restaurantId,
                         'day_of_week' => $scheduleData['day_of_week'],
-                    ],
-                    [
-                        'menu_content' => $scheduleData['menu_content'] ?? '',
                     ]
                 );
+                $schedule->dishes()->sync($scheduleData['dishes'] ?? []);
             }
         }
 

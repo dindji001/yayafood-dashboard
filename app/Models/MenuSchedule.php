@@ -12,8 +12,12 @@ class MenuSchedule extends Model
     protected $fillable = [
         'restaurant_id',
         'day_of_week',
-        'menu_content',
     ];
+
+    public function dishes()
+    {
+        return $this->belongsToMany(Dish::class, 'dish_menu_schedule');
+    }
 
     public function restaurant()
     {

@@ -20,6 +20,11 @@ class Dish extends Model
         return $this->image ? asset('storage/' . $this->image) : null;
     }
 
+    public function menuSchedules()
+    {
+        return $this->belongsToMany(MenuSchedule::class, 'dish_menu_schedule');
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

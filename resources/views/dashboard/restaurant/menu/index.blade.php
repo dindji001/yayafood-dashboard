@@ -216,14 +216,16 @@
                             ];
                             $schedules = $restaurant->menuSchedules->keyBy('day_of_week');
                             $openingHours = $restaurant->openingHours->keyBy('day_of_week');
+                            $allDishes = $restaurant->categories->flatMap->dishes;
                         @endphp
 
                         @foreach($days as $num => $label)
                             @php 
                                 $s = $schedules->get($num);
                                 $isOpen = $openingHours->has($num) && !$openingHours->get($num)->is_closed;
+                                $selectedDishIds = $s ? $s->dishes->pluck('id')->toArray() : [];
                             @endphp
-                            <div class="p-6 rounded-3xl border {{ $isOpen ? 'bg-white border-gray-100 shadow-sm' : 'bg-red-50 border-red-100 opacity-75' }} transition-all">
+                            <div class="p-6 rounded-3xl border {{ $isOpen ? 'bg-white border-gray-100 shadow-sm' : 'bg-red-50 border-red-100 opacity-75' }} transition-all flex flex-col">
                                 <div class="flex items-center justify-between mb-4">
                                     <span class="text-sm font-black text-[#2C3E3F] uppercase tracking-tighter">{{ $label }}</span>
                                     @if(!$isOpen)
@@ -236,15 +238,31 @@
                                 <input type="hidden" name="schedules[{{ $loop->index }}][day_of_week]" value="{{ $num }}">
                                 
                                 @if(!$isOpen)
-                                    <div class="h-24 flex flex-col items-center justify-center text-center gap-2">
+                                    <div class="h-32 flex flex-col items-center justify-center text-center gap-2">
                                         <p class="text-[10px] font-bold text-red-400 uppercase leading-tight">Le restaurant est fermé ce jour.<br>Ouvrez-le dans la configuration pour ajouter un menu.</p>
                                         <a href="{{ route('restaurant.settings.hours') }}" class="text-[9px] font-black text-red-600 underline uppercase tracking-widest">Gérer les horaires</a>
                                     </div>
-                                    <input type="hidden" name="schedules[{{ $loop->index }}][menu_content]" value="">
                                 @else
-                                    <textarea name="schedules[{{ $loop->index }}][menu_content]" rows="3" 
-                                              class="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-[#2C3E3F] focus:ring-2 focus:ring-blue-500/10 outline-none resize-none"
-                                              placeholder="Ex: Riz gras, Tchep, Salade de fruits...">{{ $s ? $s->menu_content : '' }}</textarea>
+                                    <div class="space-y-2 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-2xl border border-gray-100 custom-scrollbar">
+                                        @if($allDishes->isEmpty())
+                                            <p class="text-[10px] text-gray-400 text-center py-4 font-bold uppercase">Aucun plat créé pour le moment.</p>
+                                        @else
+                                            @foreach($allDishes as $dish)
+                                                <label class="flex items-center gap-3 p-2 hover:bg-white rounded-xl cursor-pointer transition-all group">
+                                                    <div class="relative flex items-center justify-center">
+                                                        <input type="checkbox" name="schedules[{{ $loop->parent->index }}][dishes][]" value="{{ $dish->id }}" 
+                                                                {{ in_array($dish->id, $selectedDishIds) ? 'checked' : '' }}
+                                                                class="peer w-5 h-5 appearance-none border-2 border-gray-200 rounded-lg checked:bg-blue-500 checked:border-blue-500 transition-all cursor-pointer">
+                                                         <i data-lucide="check" class="w-3 h-3 text-white absolute pointer-events-none opacity-0 peer-checked:opacity-100"></i>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[11px] font-black text-[#2C3E3F] group-hover:text-blue-600 transition-colors">{{ $dish->name }}</span>
+                                                        <span class="text-[9px] text-gray-400 font-bold uppercase">{{ number_format($dish->price, 0, ',', ' ') }} CFA</span>
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                         @endforeach

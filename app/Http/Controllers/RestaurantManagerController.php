@@ -57,7 +57,7 @@ class RestaurantManagerController extends Controller
     public function menu()
     {
         $user = Auth::user();
-        $restaurant = Restaurant::with(['categories.dishes', 'menuSchedules', 'openingHours'])->findOrFail($user->restaurant_id);
+        $restaurant = Restaurant::with(['categories.dishes', 'menuSchedules.dishes', 'openingHours'])->findOrFail($user->restaurant_id);
         return view('dashboard.restaurant.menu.index', compact('restaurant'));
     }
 

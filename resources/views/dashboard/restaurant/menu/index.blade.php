@@ -380,8 +380,35 @@
         </div>
     </div>
 
+    <!-- Modal Edit Category -->
+    <div id="editCategoryModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity" onclick="closeModal('editCategoryModal')"></div>
+            <div class="relative bg-white rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl border border-gray-100 overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-orange-500"></div>
+                <h3 class="text-2xl font-black text-[#2C3E3F] mb-8 uppercase tracking-tight">Modifier la Catégorie</h3>
+                <form id="editCategoryForm" method="POST" class="space-y-6">
+                    @csrf
+                    @method('PUT')
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Nom du menu</label>
+                        <input type="text" name="name" id="edit_category_name" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                    </div>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#2C3E3F] transition-all shadow-lg">Enregistrer les modifications</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
+
+        function openEditCategoryModal(id, name) {
+            const form = document.getElementById('editCategoryForm');
+            form.action = `/restaurant/categories/${id}`;
+            document.getElementById('edit_category_name').value = name;
+            openModal('editCategoryModal');
+        }
         function openEditDishModal(id, name, price, description, categoryId) {
             const form = document.getElementById('editDishForm');
             form.action = `/restaurant/dishes/${id}`;

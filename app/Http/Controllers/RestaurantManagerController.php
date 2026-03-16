@@ -291,12 +291,18 @@ class RestaurantManagerController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
         // Verify category belongs to this restaurant
         $category = Category::where('restaurant_id', $user->restaurant_id)->findOrFail($request->category_id);
 
-        Dish::create($request->all());
+        $data = $request->all();
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('dishes', 'public');
+        }
+
+        Dish::create($data);
 
         return redirect()->back()->with('success', 'Plat ajouté au menu.');
     }
@@ -309,12 +315,22 @@ class RestaurantManagerController extends Controller
         })->findOrFail($id);
 
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
         ]);
 
-        $dish->update($request->all());
+        // Verify category belongs to this restaurant
+        $category = Category::where('restaurant_id', $user->restaurant_id)->findOrFail($request->category_id);
+
+        $data = $request->all();
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('dishes', 'public');
+        }
+
+        $dish->update($data);
 
         return redirect()->back()->with('success', 'Plat mis à jour.');
     }

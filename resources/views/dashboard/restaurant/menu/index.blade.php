@@ -144,16 +144,20 @@
                             @endif
 
                             <div class="flex justify-between items-start mb-6">
-                                <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-xl border border-gray-100">
-                                    {{ substr($dish->name, 0, 1) }}
+                                <div class="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-[#2C3E3F] font-black text-xl border border-gray-100 overflow-hidden">
+                                    @if($dish->image)
+                                        <img src="{{ asset('storage/' . $dish->image) }}" alt="{{ $dish->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ substr($dish->name, 0, 1) }}
+                                    @endif
                                 </div>
                                 <div class="flex gap-1">
-                                    <button onclick="openEditDishModal('{{ $dish->id }}', '{{ $dish->name }}', '{{ $dish->price }}', '{{ $dish->description }}', '{{ $category->id }}')" class="p-2 text-gray-300 hover:text-orange-500 transition-all">
+                                    <button onclick="openEditDishModal('{{ $dish->id }}', '{{ addslashes($dish->name) }}', '{{ $dish->price }}', '{{ addslashes($dish->description) }}', '{{ $dish->category_id }}')" class="p-2 text-gray-300 hover:text-orange-500 transition-all">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                     </button>
                                     <form action="{{ route('restaurant.dishes.toggle', $dish->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="p-2 text-gray-300 hover:text-teal-500 transition-all">
+                                        <button type="submit" class="p-2 {{ $dish->is_available ? 'text-gray-300 hover:text-blue-500' : 'text-red-500 hover:text-teal-500' }} transition-all" title="{{ $dish->is_available ? 'Masquer du menu' : 'Afficher sur le menu' }}">
                                             <i data-lucide="{{ $dish->is_available ? 'eye' : 'eye-off' }}" class="w-4 h-4"></i>
                                         </button>
                                     </form>
@@ -300,7 +304,7 @@
             <div class="relative bg-white rounded-[2.5rem] w-full max-w-xl p-10 shadow-2xl border border-gray-100 overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-orange-500"></div>
                 <h3 class="text-2xl font-black text-[#2C3E3F] mb-8 uppercase tracking-tight">Ajouter un Plat</h3>
-                <form action="{{ route('restaurant.dishes.create') }}" method="POST" class="space-y-6">
+                <form action="{{ route('restaurant.dishes.create') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     <div class="grid grid-cols-2 gap-6">
                         <div class="space-y-2 col-span-2">
@@ -321,6 +325,10 @@
                         </div>
                     </div>
                     <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Image du plat</label>
+                        <input type="file" name="image" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                    </div>
+                    <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Description</label>
                         <textarea name="description" rows="3" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold resize-none"></textarea>
                     </div>
@@ -330,8 +338,60 @@
         </div>
     </div>
 
+    <!-- Modal Edit Dish -->
+    <div id="editDishModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity" onclick="closeModal('editDishModal')"></div>
+            <div class="relative bg-white rounded-[2.5rem] w-full max-w-xl p-10 shadow-2xl border border-gray-100 overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-orange-500"></div>
+                <h3 class="text-2xl font-black text-[#2C3E3F] mb-8 uppercase tracking-tight">Modifier le Plat</h3>
+                <form id="editDishForm" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+                    @method('PUT')
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-2 col-span-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Catégorie</label>
+                            <select name="category_id" id="edit_dish_category_id" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                                @foreach($restaurant->categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Nom du plat</label>
+                            <input type="text" name="name" id="edit_dish_name" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Prix (CFA)</label>
+                            <input type="number" name="price" id="edit_dish_price" required class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Image du plat (laisser vide pour conserver)</label>
+                        <input type="file" name="image" accept="image/*" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Description</label>
+                        <textarea name="description" id="edit_dish_description" rows="3" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all font-semibold resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-[#2C3E3F] transition-all shadow-lg">Enregistrer les modifications</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
+        function openEditDishModal(id, name, price, description, categoryId) {
+            const form = document.getElementById('editDishForm');
+            form.action = `/restaurant/dishes/${id}`;
+            document.getElementById('edit_dish_name').value = name;
+            document.getElementById('edit_dish_price').value = price;
+            document.getElementById('edit_dish_description').value = description;
+            document.getElementById('edit_dish_category_id').value = categoryId;
+            openModal('editDishModal');
+        }
+
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.body.style.overflow = 'auto'; }
     </script>

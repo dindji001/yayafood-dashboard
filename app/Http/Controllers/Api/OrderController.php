@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Order\StoreOrderRequest;
+use App\Http\Requests\Api\Order\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -27,22 +28,8 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'items' => 'required|array|min:1',
-            'items.*.dish_id' => 'required|exists:dishes,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'table_number' => 'nullable|string',
-            'payment_method' => 'nullable|string',
-            'payment_timing' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
         $order = Order::create([
             'user_id' => $request->user()->id,
             'restaurant_id' => $request->restaurant_id,
@@ -76,7 +63,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateOrderStatusRequest $request, $id)
     {
         $order = Order::findOrFail($id);
         
@@ -84,14 +71,6 @@ class OrderController extends Controller
         $user = $request->user();
         if ($user->role !== 'super_admin' && ($user->role !== 'restaurant' || $user->restaurant_id !== $order->restaurant_id)) {
             return response()->json(['message' => 'Action non autorisée'], 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:pending,preparing,ready,served,closed,cancelled',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $order->update(['status' => $request->status]);

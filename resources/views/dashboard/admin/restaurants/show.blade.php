@@ -97,6 +97,38 @@
             @endif
         </div>
 
+        <!-- Restaurant User Info -->
+        <div class="glass-card rounded-[2.5rem] p-10 mb-12 shadow-sm border border-gray-100">
+            <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-6 flex items-center gap-3">
+                <i data-lucide="user-circle" class="w-6 h-6 text-blue-500"></i>
+                Compte Restaurateur
+            </h3>
+            @php
+                $restaurantUser = \App\Models\User::where('restaurant_id', $restaurant->id)->where('role', 'restaurant')->first();
+            @endphp
+            @if($restaurantUser)
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nom du Compte</p>
+                        <p class="text-lg font-black text-[#2C3E3F]">{{ $restaurantUser->name }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</p>
+                        <p class="text-lg font-black text-[#2C3E3F]">{{ $restaurantUser->email }}</p>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 md:col-span-2">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Statut</p>
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $restaurantUser->must_change_password ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600' }}">
+                                {{ $restaurantUser->must_change_password ? 'Changement de mot de passe requis' : 'Actif' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <p class="text-red-500 font-medium">Aucun compte restaurateur associé à ce restaurant.</p>
+            @endif
+        </div>
 
 
         <!-- Opening Hours (Admin View) -->

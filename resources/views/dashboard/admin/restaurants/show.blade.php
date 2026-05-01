@@ -97,6 +97,55 @@
             @endif
         </div>
 
+        <!-- Password Change Section -->
+        <div class="glass-card rounded-[2.5rem] p-10 mb-12 shadow-sm border border-gray-100">
+            <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-6 flex items-center gap-3">
+                <i data-lucide="key" class="w-6 h-6 text-purple-500"></i>
+                Réinitialiser le Mot de Passe du Restaurateur
+            </h3>
+            @php
+                $restaurantUser = \App\Models\User::where('restaurant_id', $restaurant->id)->where('role', 'restaurant')->first();
+            @endphp
+            @if($restaurantUser)
+                <form action="{{ route('admin.restaurants.password', $restaurant->id) }}" method="POST">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email du Restaurateur</label>
+                            <input type="email" value="{{ $restaurantUser->email }}" disabled class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nom du Compte</label>
+                            <input type="text" value="{{ $restaurantUser->name }}" disabled class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 font-medium">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nouveau Mot de Passe (8 chiffres)</label>
+                            <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all font-medium" placeholder="12345678">
+                            @error('password')
+                                <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Confirmer le Mot de Passe</label>
+                            <input type="password" name="password_confirmation" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all font-medium" placeholder="12345678">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                        Réinitialiser le Mot de Passe
+                    </button>
+                    <p class="text-gray-400 text-xs mt-4 font-medium">
+                        <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>
+                        Le restaurateur devra changer son mot de passe à la prochaine connexion.
+                    </p>
+                </form>
+            @else
+                <p class="text-red-500 font-medium">Aucun compte restaurateur associé à ce restaurant.</p>
+            @endif
+        </div>
+
         <!-- Opening Hours (Admin View) -->
         <div class="glass-card rounded-[2.5rem] p-10 mb-12 shadow-sm border border-gray-100">
             <h3 class="text-xl font-extrabold text-[#2C3E3F] mb-6 flex items-center gap-3">

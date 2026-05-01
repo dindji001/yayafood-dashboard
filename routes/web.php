@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/admin/restaurants/{id}', [AdminController::class, 'deleteRestaurant'])->name('admin.restaurants.delete');
         Route::post('/admin/restaurants/{id}/toggle', [AdminController::class, 'toggleRestaurantStatus'])->name('admin.restaurants.toggle');
         Route::post('/admin/restaurants/{id}/featured', [AdminController::class, 'toggleRestaurantFeatured'])->name('admin.restaurants.featured');
+        Route::post('/admin/restaurants/{id}/password', [AdminController::class, 'updateRestaurantPassword'])->name('admin.restaurants.password');
 
         // Demandes de suppression
         Route::get('/admin/deletion-requests', [AdminController::class, 'deletionRequests'])->name('admin.deletion-requests.index');

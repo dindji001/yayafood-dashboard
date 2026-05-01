@@ -299,4 +299,21 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Demande de suppression rejetée.');
         }
     }
+
+    public function updateRestaurantPassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|digits:8|confirmed',
+        ]);
+
+        $restaurant = Restaurant::findOrFail($id);
+        $user = User::where('restaurant_id', $restaurant->id)->where('role', 'restaurant')->firstOrFail();
+        
+        $user->update([
+            'password' => Hash::make($request->password),
+            'must_change_password' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Mot de passe du restaurant mis à jour avec succès.');
+    }
 }

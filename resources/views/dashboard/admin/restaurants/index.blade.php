@@ -107,7 +107,7 @@
                                     <i data-lucide="star" class="w-4 h-4 {{ $r->is_featured ? 'fill-current' : '' }}"></i>
                                 </button>
                             </form>
-                            <button onclick="openPasswordModal('{{ $r->id }}', '{{ $r->name }}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-purple-100 text-purple-600 hover:bg-purple-200" title="Réinitialiser le mot de passe">
+                            <button onclick='openPasswordModal({{ $r->id }}, {{ json_encode($r->name) }})' class="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-purple-100 text-purple-600 hover:bg-purple-200" title="Réinitialiser le mot de passe">
                                 <i data-lucide="key" class="w-4 h-4"></i>
                             </button>
                             <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">

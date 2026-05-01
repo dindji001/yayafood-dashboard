@@ -107,6 +107,9 @@
                                     <i data-lucide="star" class="w-4 h-4 {{ $r->is_featured ? 'fill-current' : '' }}"></i>
                                 </button>
                             </form>
+                            <button onclick="openPasswordModal('{{ $r->id }}', '{{ $r->name }}')" class="w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-purple-100 text-purple-600 hover:bg-purple-200" title="Réinitialiser le mot de passe">
+                                <i data-lucide="key" class="w-4 h-4"></i>
+                            </button>
                             <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {{ $r->is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }}">
                                 {{ $r->is_active ? 'Opérationnel' : 'Suspendu' }}
                             </span>
@@ -136,6 +139,47 @@
             @endforeach
         </div>
     </main>
+
+    <!-- Modal de réinitialisation de mot de passe -->
+    <div id="passwordModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm transition-opacity" onclick="closeModal('passwordModal')"></div>
+            
+            <div class="relative bg-white rounded-[2.5rem] w-full max-w-lg p-10 shadow-2xl border border-gray-100 overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-purple-700"></div>
+                
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h3 class="text-2xl font-extrabold text-[#2C3E3F] tracking-tight">Réinitialiser le Mot de Passe</h3>
+                        <p class="text-gray-400 font-medium mt-1" id="passwordModalRestaurantName"></p>
+                    </div>
+                    <button onclick="closeModal('passwordModal')" class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <form id="passwordResetForm" method="POST" class="space-y-6">
+                    @csrf
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Nouveau Mot de Passe (8 chiffres)</label>
+                        <div class="relative">
+                            <input type="text" name="password" id="modalPassword" required maxlength="8" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-semibold" placeholder="12345678">
+                            <button type="button" onclick="generateModalPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-purple-600 hover:text-purple-700 font-bold text-[10px] uppercase tracking-wider">Générer</button>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-[#2C3E3F] ml-2">Confirmer le Mot de Passe</label>
+                        <input type="text" name="password_confirmation" id="modalPasswordConfirm" required maxlength="8" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all font-semibold" placeholder="12345678">
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="closeModal('passwordModal')" class="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-extrabold text-xs uppercase tracking-[0.2em] hover:bg-gray-200 transition-all">Annuler</button>
+                        <button type="submit" class="flex-[2] bg-gradient-to-r from-purple-600 to-purple-700 text-white py-4 rounded-2xl font-extrabold text-xs uppercase tracking-[0.2em] hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg shadow-purple-600/20">Réinitialiser</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de création -->
     <div id="createRestaurantModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
@@ -223,9 +267,24 @@
             }
         }
 
+        function openPasswordModal(restaurantId, restaurantName) {
+            document.getElementById('passwordModalRestaurantName').textContent = restaurantName;
+            document.getElementById('passwordResetForm').action = '/admin/restaurants/' + restaurantId + '/password';
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('modalPasswordConfirm').value = '';
+            generateModalPassword();
+            openModal('passwordModal');
+        }
+
         function generatePassword() {
             const password = Math.floor(10000000 + Math.random() * 90000000).toString();
             document.getElementById('generatedPassword').value = password;
+        }
+
+        function generateModalPassword() {
+            const password = Math.floor(10000000 + Math.random() * 90000000).toString();
+            document.getElementById('modalPassword').value = password;
+            document.getElementById('modalPasswordConfirm').value = password;
         }
 
         function checkFileSize(input) {

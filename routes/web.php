@@ -11,6 +11,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route pour les QR codes des restaurants
+Route::get('/r/{id}', function ($id) {
+    return redirect()->away('yayafood://restaurant/' . $id);
+})->name('restaurant.qr');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
